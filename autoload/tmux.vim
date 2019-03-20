@@ -110,11 +110,9 @@ let s:highlight_group_manpage_section = {
 " keyword based jump {{{2
 
 fu! s:get_search_keyword(keyword) abort
-    if has_key(s:keyword_mappings, a:keyword)
-        return s:keyword_mappings[a:keyword]
-    else
-        return a:keyword
-    endif
+    return has_key(s:keyword_mappings, a:keyword)
+        \ ?     s:keyword_mappings[a:keyword]
+        \ :     a:keyword
 endfu
 
 fu! s:man_tmux_search(section, regex) abort
@@ -131,18 +129,16 @@ fu! s:man_tmux_search(section, regex) abort
 endfu
 
 fu! s:keyword_based_jump(highlight_group, keyword) abort
-    if has_key(s:highlight_group_manpage_section, a:highlight_group)
-        let section = s:highlight_group_manpage_section[a:highlight_group]
-    else
-        let section = ''
-    endif
+    let section = has_key(s:highlight_group_manpage_section, a:highlight_group)
+        \ ?     s:highlight_group_manpage_section[a:highlight_group]
+        \ :     ''
     let search_keyword = s:get_search_keyword(a:keyword)
 
     Man tmux
 
-    if s:man_tmux_search(section, '^\s\+\zs'.search_keyword) ||
-    \ s:man_tmux_search(section, search_keyword) ||
-    \ s:man_tmux_search('', a:keyword)
+    if s:man_tmux_search(section, '^\s\+\zs'.search_keyword)
+    \ || s:man_tmux_search(section, search_keyword)
+    \ || s:man_tmux_search('', a:keyword)
         norm! zt
     else
         redraw
@@ -190,38 +186,32 @@ fu! s:highlight_group_based_jump(highlight_group, keyword) abort
         norm! zt
     else
         redraw
-        echohl ErrorMsg | echo "Sorry, couldn't find the exact description" | echohl None
+        echohl ErrorMsg | echo 'Sorry, couldn't find the exact description' | echohl None
     end
 endfu
 
 " just open manpage {{{2
 
 fu! s:just_open_manpage(highlight_group) abort
-    let hg = a:highlight_group
-    let char_under_cursor = getline('.')[col('.')-1]
-    if hg ==# '' ||
-    \ hg ==# 'tmuxStringDelimiter' ||
-    \ hg ==# 'tmuxOptions' ||
-    \ hg ==# 'tmuxAction' ||
-    \ hg ==# 'tmuxBoolean' ||
-    \ hg ==# 'tmuxOptionValue' ||
-    \ hg ==# 'tmuxNumber' ||
-    \ char_under_cursor =~# '\s'
-        return 1
-    else
-        return 0
-    endif
+    let char_under_cursor = matchstr(getline('.'), '\%'.col('.').'c.')
+    return index([
+        \ '',
+        \ 'tmuxStringDelimiter',
+        \ 'tmuxOptions',
+        \ 'tmuxAction',
+        \ 'tmuxBoolean',
+        \ 'tmuxOptionValue',
+        \ 'tmuxNumber'],
+        \ a:highlight_group) >= 0 ||
+        \ char_under_cursor =~# '\s'
 endfu
 
 " 'public' function {{{2
 
 fu! tmux#man(...) abort
-    if !exists(":Man")
-        runtime! ftplugin/man.vim
-    endif
-    let keyword = expand("<cword>")
+    let keyword = expand('<cword>')
 
-    let highlight_group = synIDattr(synID(line("."), col("."), 1), "name")
+    let highlight_group = synIDattr(synID(line('.'), col('.'), 1), 'name')
     if s:just_open_manpage(highlight_group)
         Man tmux
     elseif has_key(s:highlight_group_to_match_mapping, highlight_group)
@@ -280,12 +270,11 @@ fu! tmux#filterop(type) abort
             endwhile
 
             " skip empty line and comments
-            if line =~# '^\s*#' ||
-            \ line =~# '^\s*$'
+            if line =~# '^\s*\%(#\|$\)'
                 continue
             endif
 
-            let command = "tmux ".line
+            let command = 'tmux '.line
             if all_output =~# '\S'
                 let all_output .= "\n".command
             else  " empty var, do not include newline first
