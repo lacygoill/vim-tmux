@@ -1,19 +1,11 @@
-" Vim syntax file
-" Language: tmux(1) configuration file
-" URL:      https://github.com/tmux-plugins/vim-tmux
-"
-" Header from the original author
-" --------------------------------------------------
-" Creator: Tiago Cunha <me@tiagocunha.org>
-" Last Change By The Creator: $Date: 2012-10-23 12:23:55 $
-" License: This file is placed in the public domain.
-
-if exists("b:current_syntax")
-  finish
+if exists('b:current_syntax')
+    finish
 endif
 
-setlocal iskeyword+=-
-syntax case match
+" Make sure a hyphen is not a keyword character.
+" Is it really necessary?
+syn iskeyword @,48-57,192-255,$,_
+syn case match
 
 syn keyword tmuxAction  any current none
 syn keyword tmuxBoolean off on
@@ -208,54 +200,55 @@ syn region tmuxShellInpol matchgroup=tmuxShellInpolDelimiter start=/#(/ skip=/#(
 syn region tmuxString matchgroup=tmuxStringDelimiter start=/"/ skip=/\\./ end=/"/ contains=tmuxFmtInpol,tmuxFmtAlias,tmuxAttrInpol,tmuxShellInpol,tmuxPromptInpol,tmuxDateInpol,@Spell display keepend
 syn region tmuxString matchgroup=tmuxStringDelimiter start=/'/ end=/'/            contains=tmuxFmtInpol,tmuxFmtAlias,tmuxAttrInpol,tmuxShellInpol,tmuxPromptInpol,tmuxDateInpol,@Spell display keepend
 
-hi def link tmuxAction              Boolean
-hi def link tmuxBoolean             Boolean
-hi def link tmuxOptionValue         Constant
-hi def link tmuxLayoutOptionValue   Constant
+hi link tmuxAction              Boolean
+hi link tmuxBoolean             Boolean
+hi link tmuxOptionValue         Constant
+hi link tmuxLayoutOptionValue   Constant
 
-hi def link tmuxClientSessionCmds   Keyword
-hi def link tmuxWindowPaneCmds      Keyword
-hi def link tmuxBindingCmds         Keyword
-hi def link tmuxEnvironmentCmds     Keyword
-hi def link tmuxStatusLineCmds      Keyword
-hi def link tmuxBufferCmds          Keyword
-hi def link tmuxMiscCmds            Keyword
+hi link tmuxClientSessionCmds   Keyword
+hi link tmuxWindowPaneCmds      Keyword
+hi link tmuxBindingCmds         Keyword
+hi link tmuxEnvironmentCmds     Keyword
+hi link tmuxStatusLineCmds      Keyword
+hi link tmuxBufferCmds          Keyword
+hi link tmuxMiscCmds            Keyword
 
-hi def link tmuxSpecialCmds         Type
-hi def link tmuxComment             Comment
-hi def link tmuxKey                 Special
-hi def link tmuxKeySymbol           Special
-hi def link tmuxNumber              Number
-hi def link tmuxSelWindowOption     Number
-hi def link tmuxOptions             Operator
-hi def link tmuxOptsSet             PreProc
-hi def link tmuxUserOptsSet         Identifier
-hi def link tmuxOptsSetw            PreProc
-hi def link tmuxKeyTable            PreProc
-hi def link tmuxModeCmds            Keyword
-hi def link tmuxString              String
-hi def link tmuxStringDelimiter     Delimiter
-hi def link tmuxColor               Constant
-hi def link tmuxStyle               Constant
+hi link tmuxSpecialCmds         Type
+hi link tmuxComment             Comment
+hi link tmuxKey                 Special
+hi link tmuxKeySymbol           Special
+hi link tmuxNumber              Number
+hi link tmuxSelWindowOption     Number
+hi link tmuxOptions             Operator
+hi link tmuxOptsSet             PreProc
+hi link tmuxUserOptsSet         Identifier
+hi link tmuxOptsSetw            PreProc
+hi link tmuxKeyTable            PreProc
+hi link tmuxModeCmds            Keyword
+hi link tmuxString              String
+hi link tmuxStringDelimiter     Delimiter
+hi link tmuxColor               Constant
+hi link tmuxStyle               Constant
 
-hi def link tmuxPromptInpol         Special
-hi def link tmuxDateInpol           Special
-hi def link tmuxFmtAlias            Special
-hi def link tmuxFmtVariable         Constant
-hi def link tmuxFmtConditional      Conditional
-hi def link tmuxFmtLimit            Operator
-hi def link tmuxAttrBgFg            Constant
-hi def link tmuxAttrEquals          Operator
-hi def link tmuxAttrSeparator       Operator
-hi def link tmuxShellInpol          String
-hi def link tmuxFmtInpolDelimiter   Delimiter
-hi def link tmuxAttrInpolDelimiter  Delimiter
-hi def link tmuxShellInpolDelimiter Delimiter
+hi link tmuxPromptInpol         Special
+hi link tmuxDateInpol           Special
+hi link tmuxFmtAlias            Special
+hi link tmuxFmtVariable         Constant
+hi link tmuxFmtConditional      Conditional
+hi link tmuxFmtLimit            Operator
+hi link tmuxAttrBgFg            Constant
+hi link tmuxAttrEquals          Operator
+hi link tmuxAttrSeparator       Operator
+hi link tmuxShellInpol          String
+hi link tmuxFmtInpolDelimiter   Delimiter
+hi link tmuxAttrInpolDelimiter  Delimiter
+hi link tmuxShellInpolDelimiter Delimiter
 
-hi def link tmuxTodo                Todo
-hi def link tmuxURL                 Underlined
-hi def link tmuxVariable            Constant
-hi def link tmuxVariableExpansion   Constant
-hi def link tmuxAdditionalCommand   Special
+hi link tmuxTodo                Todo
+hi link tmuxURL                 Underlined
+hi link tmuxVariable            Constant
+hi link tmuxVariableExpansion   Constant
+hi link tmuxAdditionalCommand   Special
 
-let b:current_syntax = "tmux"
+let b:current_syntax = 'tmux'
+

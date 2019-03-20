@@ -1,25 +1,25 @@
-if (exists("b:did_ftplugin"))
-  finish
+if exists('b:did_ftplugin')
+    finish
 endif
 let b:did_ftplugin = 1
 
-let s:cpo_save = &cpo
-set cpo&vim
+setl cms=#\ %s
 
-setlocal comments=:#
-setlocal commentstring=#\ %s
+nno <buffer><nowait><silent> K :<c-u>call tmux#man()<cr>
 
-if maparg('K','n') ==# ''
-  nnoremap <silent><buffer> K :call tmux#man()<CR>
-endif
+nno <buffer><nowait><silent> g!  :<c-u>set opfunc=tmux#filterop<cr>g@
+nno <buffer><nowait><silent> g!! :<c-u>set opfunc=tmux#filterop<cr>g@_
+xno <buffer><nowait><silent> g!  :<c-u>call tmux#filterop(visualmode())<cr>
 
-nnoremap <silent> <Plug>TmuxExec :<C-U>set opfunc=tmux#filterop<CR>g@
-xnoremap <silent> <Plug>TmuxExec :<C-U>call tmux#filterop(visualmode())<CR>
-nmap <buffer> g! <Plug>TmuxExec
-nmap <buffer> g!! <Plug>TmuxExec_
-xmap <buffer> g! <Plug>TmuxExec
+" teardown {{{1
 
-let &cpo = s:cpo_save
-unlet s:cpo_save
+let b:undo_ftplugin = get(b:, 'undo_ftplugin', '')
+    \ . (empty(get(b:, 'undo_ftplugin', '')) ? '' : '|')
+    \ . "
+    \   setl cms<
+    \ | exe 'nunmap <buffer> K'
+    \ | exe 'nunmap <buffer> g!'
+    \ | exe 'nunmap <buffer> g!!'
+    \ | exe 'xunmap <buffer> g!'
+    \ "
 
-" vim: nowrap sw=2 sts=2 ts=8:
