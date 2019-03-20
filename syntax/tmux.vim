@@ -2,10 +2,11 @@ if exists('b:current_syntax')
     finish
 endif
 
-" Make sure a hyphen is not a keyword character.
-" Is it really necessary?
-syn iskeyword @,48-57,192-255,$,_
+" Make sure a hyphen is a keyword character.
+syn iskeyword -,@,48-57,_,192-255
 syn case match
+
+syn keyword tmuxHookCmds set-hook show-hooks
 
 syn keyword tmuxAction  any current none
 syn keyword tmuxBoolean off on
@@ -199,6 +200,8 @@ syn region tmuxShellInpol matchgroup=tmuxShellInpolDelimiter start=/#(/ skip=/#(
 
 syn region tmuxString matchgroup=tmuxStringDelimiter start=/"/ skip=/\\./ end=/"/ contains=tmuxFmtInpol,tmuxFmtAlias,tmuxAttrInpol,tmuxShellInpol,tmuxPromptInpol,tmuxDateInpol,@Spell display keepend
 syn region tmuxString matchgroup=tmuxStringDelimiter start=/'/ end=/'/            contains=tmuxFmtInpol,tmuxFmtAlias,tmuxAttrInpol,tmuxShellInpol,tmuxPromptInpol,tmuxDateInpol,@Spell display keepend
+
+hi link tmuxHookCmds            Keyword
 
 hi link tmuxAction              Boolean
 hi link tmuxBoolean             Boolean
