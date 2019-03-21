@@ -11,12 +11,15 @@ nno <buffer><nowait><silent> g!  :<c-u>set opfunc=tmux#filterop<cr>g@
 nno <buffer><nowait><silent> g!! :<c-u>set opfunc=tmux#filterop<cr>g@_
 xno <buffer><nowait><silent> g!  :<c-u>call tmux#filterop(visualmode())<cr>
 
+compiler tmux
+
 " teardown {{{1
 
 let b:undo_ftplugin = get(b:, 'undo_ftplugin', '')
     \ . (empty(get(b:, 'undo_ftplugin', '')) ? '' : '|')
     \ . "
     \   setl cms<
+    \ | set efm< mp<
     \ | exe 'nunmap <buffer> K'
     \ | exe 'nunmap <buffer> g!'
     \ | exe 'nunmap <buffer> g!!'

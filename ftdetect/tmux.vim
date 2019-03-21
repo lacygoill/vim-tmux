@@ -1,1 +1,1 @@
-au BufNewFile,BufRead {.,}tmux*.conf set ft=tmux | compiler tmux
+au BufNewFile,BufRead {.,}tmux*.conf setf tmux

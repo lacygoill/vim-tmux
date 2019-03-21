@@ -283,6 +283,8 @@ fu! tmux#filterop(type) abort
 
             let output = system(command)
             if v:shell_error
+                " reset `v:shell_error`
+                call system('')
                 throw output
             elseif output =~# '\S'
                 let all_output .= "\n> ".output[0:-2]
