@@ -148,7 +148,31 @@ syn match tmuxSpecialCmds /^\s*set\(-option\)\?/ display
 syn match tmuxOptsSetw        /\(setw\|set-window-option\)/ display
 syn match tmuxSpecialCmds /^\s*\(setw\|set-window-option\)/ display
 
-syn region tmuxComment start=/#/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell display oneline
+" Why the `skip` argument?{{{
+"
+" Because of this undocumented syntax:
+"
+"                         v
+"     # some tmux comment \
+"     this second line is still considered commented by tmux!!!
+"
+" I don't want to think that a line of code is sourced while in effect it is *not*.
+"}}}
+" Does it cause an issue?{{{
+"
+" Yes.
+"
+" A commented list item stops after the first line:
+"
+"     + the start of this list item is correctly highlighted
+"       but the next line is not (it's highlighted as a commented code block)
+"
+" It's  an  acceptable issue:  don't  use  a list  in  a  tmux comment,  or  use
+" single-line items only.
+"}}}
+"     syn region tmuxComment start=/#/ skip=/\\\@<!\\$/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell keepend
+" syn region tmuxComment start=/#/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell keepend
+syn match tmuxComment /#.*/ contains=tmuxTodo keepend
 
 syn keyword tmuxTodo FIXME NOTE TODO XXX todo contained
 syn match tmuxURL `\v<(((https?|ftp|gopher)://|(mailto|file|news):)[^'  <>"]+|(www|web|w3)[a-z0-9_-]*\.[a-z0-9._-]+\.[^'  <>"]+)[a-zA-Z0-9/]` contained
