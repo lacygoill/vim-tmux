@@ -158,6 +158,16 @@ syn match tmuxSpecialCmds /^\s*\(setw\|set-window-option\)/ display
 "
 " I don't want to think that a line of code is sourced while in effect it is *not*.
 "}}}
+" Why the `keepend` argument?{{{
+"
+" To  prevent  a  commented  codeblock  from continuing  on  the  next  line  of
+" uncommented code:
+"
+"     #     x
+"     set -s default-terminal tmux-256color
+"
+" In this example, without `keepend`, the `set` line would be wrongly commented.
+"}}}
 " Does it cause an issue?{{{
 "
 " Yes.
@@ -170,9 +180,8 @@ syn match tmuxSpecialCmds /^\s*\(setw\|set-window-option\)/ display
 " It's  an  acceptable issue:  don't  use  a list  in  a  tmux comment,  or  use
 " single-line items only.
 "}}}
-"     syn region tmuxComment start=/#/ skip=/\\\@<!\\$/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell keepend
-" syn region tmuxComment start=/#/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell keepend
-syn match tmuxComment /#.*/ contains=tmuxTodo keepend
+" TODO: Why does tmuxComment need keepend, but not shComment?
+syn region tmuxComment start=/#/ skip=/\\\@<!\\$/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell keepend
 
 syn keyword tmuxTodo FIXME NOTE TODO XXX todo contained
 syn match tmuxURL `\v<(((https?|ftp|gopher)://|(mailto|file|news):)[^'  <>"]+|(www|web|w3)[a-z0-9_-]*\.[a-z0-9._-]+\.[^'  <>"]+)[a-zA-Z0-9/]` contained
