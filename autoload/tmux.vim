@@ -116,14 +116,11 @@ fu! s:get_search_keyword(keyword) abort
 endfu
 
 fu! s:man_tmux_search(section, regex) abort
-    let wrapscan_save = &wrapscan
-    set nowrapscan
     try
-        exe 'norm! :/^'.a:section.'/ /'.a:regex."\<cr>"
-        let &wrapscan = wrapscan_save
+        call search('^'.a:section)
+        call search(a:regex)
         return 1
     catch
-        let &wrapscan = wrapscan_save
         return 0
     endtry
 endfu
@@ -209,7 +206,7 @@ endfu
 " 'public' function {{{2
 
 fu! tmux#man(...) abort
-    let keyword = expand('<cword>')
+    let keyword = expand('<cWORD>')
 
     let highlight_group = synIDattr(synID(line('.'), col('.'), 1), 'name')
     if s:just_open_manpage(highlight_group)
