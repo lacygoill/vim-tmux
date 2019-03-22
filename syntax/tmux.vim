@@ -148,16 +148,6 @@ syn match tmuxSpecialCmds /^\s*set\(-option\)\?/ display
 syn match tmuxOptsSetw        /\(setw\|set-window-option\)/ display
 syn match tmuxSpecialCmds /^\s*\(setw\|set-window-option\)/ display
 
-" Why the `skip` argument?{{{
-"
-" Because of this undocumented syntax:
-"
-"                         v
-"     # some tmux comment \
-"     this second line is still considered commented by tmux!!!
-"
-" I don't want to think that a line of code is sourced while in effect it is *not*.
-"}}}
 " Why the `keepend` argument?{{{
 "
 " To  prevent  a  commented  codeblock  from continuing  on  the  next  line  of
@@ -172,7 +162,7 @@ syn match tmuxSpecialCmds /^\s*\(setw\|set-window-option\)/ display
 "
 " Yes.
 "
-" A commented list item stops after the first line:
+" Because of it, a commented list item stops after the first line:
 "
 "     + the start of this list item is correctly highlighted
 "       but the next line is not (it's highlighted as a commented code block)
@@ -180,7 +170,26 @@ syn match tmuxSpecialCmds /^\s*\(setw\|set-window-option\)/ display
 " It's  an  acceptable issue:  don't  use  a list  in  a  tmux comment,  or  use
 " single-line items only.
 "}}}
-" TODO: Why does tmuxComment need keepend, but not shComment?
+" Why does `tmuxComment` need keepend, but not other similar syntax groups like `shComment`?{{{
+"
+" `shComment` is a match, so no issue.
+" But `tmuxComment` *must* be a region, because we need `skip`.
+"}}}
+" Why the `skip` argument?{{{
+"
+" Because of this undocumented syntax:
+"
+"                         v
+"     # some tmux comment \
+"     this second line is still considered commented by tmux!!!
+"
+" This  is because  tmux joins  continuation  lines, *then*  checks whether  the
+" resulting line is commented:
+" https://github.com/tmux/tmux/issues/75#issuecomment-130452290
+"
+" I don't want to wrongly think that a  line of code is sourced, while in effect
+" it is *not*.
+"}}}
 syn region tmuxComment start=/#/ skip=/\\\@<!\\$/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell keepend
 
 syn keyword tmuxTodo FIXME NOTE TODO XXX todo contained
