@@ -169,6 +169,19 @@ syn match tmuxSpecialCmds /^\s*\(setw\|set-window-option\)/ display
 "
 " It's  an  acceptable issue:  don't  use  a list  in  a  tmux comment,  or  use
 " single-line items only.
+"
+" ---
+"
+" If you think you can fix this issue, test your solution against this text:
+"
+"     #    - list item
+"     #      continuation of list item
+"
+"     #     codeblock
+"     command
+"
+"     # comment \
+"     continuation of comment
 "}}}
 " Why does `tmuxComment` need keepend, but not other similar syntax groups like `shComment`?{{{
 "
