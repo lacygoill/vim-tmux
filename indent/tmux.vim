@@ -36,7 +36,6 @@ endfu
 
 " teardown {{{1
 
-let b:undo_indent = get(b:, 'undo_indent', '')
-    \ . (empty(get(b:, 'undo_indent', '')) ? '' : '|')
-    \ . 'setl indk< inde<'
+let b:undo_indent = get(b:, 'undo_indent', 'exe')
+    \ . ' | setl indk< inde<'
 
