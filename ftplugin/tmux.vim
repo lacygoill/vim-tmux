@@ -20,8 +20,8 @@ let b:undo_ftplugin = get(b:, 'undo_ftplugin', 'exe')
     \ | setl cms<
     \ | set efm< mp<
     \ | exe 'nunmap <buffer> K'
-    \ | exe 'nunmap <buffer> g"'
-    \ | exe 'nunmap <buffer> g""'
-    \ | exe 'xunmap <buffer> g"'
+    \ | exe 'nunmap <buffer> g\"'
+    \ | exe 'nunmap <buffer> g\"\"'
+    \ | exe 'xunmap <buffer> g\"'
     \ "
 

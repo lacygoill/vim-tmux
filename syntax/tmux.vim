@@ -206,7 +206,6 @@ syn match tmuxSpecialCmds /^\s*\(setw\|set-window-option\)/ display
 syn region tmuxComment start=/#/ skip=/\\\@<!\\$/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell keepend
 
 syn keyword tmuxTodo FIXME NOTE TODO XXX todo contained
-syn match tmuxURL `\v<(((https?|ftp|gopher)://|(mailto|file|news):)[^'  <>"]+|(www|web|w3)[a-z0-9_-]*\.[a-z0-9._-]+\.[^'  <>"]+)[a-zA-Z0-9/]` contained
 
 syn match tmuxKey               /\(C-\|M-\|\^\)\+\S\+/  display
 syn match tmuxNumber            /\<[+-]\?\d\+/          display
@@ -303,7 +302,6 @@ hi link tmuxAttrInpolDelimiter  Delimiter
 hi link tmuxShellInpolDelimiter Delimiter
 
 hi link tmuxTodo                Todo
-hi link tmuxURL                 Underlined
 hi link tmuxVariable            Constant
 hi link tmuxVariableExpansion   Constant
 hi link tmuxAdditionalCommand   Special
