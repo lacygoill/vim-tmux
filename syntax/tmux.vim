@@ -134,19 +134,19 @@ syn keyword tmuxKeySymbol Up Down Left Right
 
 " these commands are special when at the beginning of the line
 syn match tmuxMiscCmds        /run\(-shell\)\?/ display
-syn match tmuxSpecialCmds /^\s*run\(-shell\)\?/ display
+syn match tmuxSpecialCmds /^\s*\zsrun\(-shell\)\?/ display
 
 syn match tmuxBindingCmds     /bind\(-key\)\?/ display
-syn match tmuxSpecialCmds /^\s*bind\(-key\)\?/ display
+syn match tmuxSpecialCmds /^\s*\zsbind\(-key\)\?/ display
 
 syn match tmuxBindingCmds     /unbind\(-key\)\?/ display
-syn match tmuxSpecialCmds /^\s*unbind\(-key\)\?/ display
+syn match tmuxSpecialCmds /^\s*\zsunbind\(-key\)\?/ display
 
 syn match tmuxOptsSet         /set\(-option\)\?/ display
-syn match tmuxSpecialCmds /^\s*set\(-option\)\?/ display
+syn match tmuxSpecialCmds /^\s*\zsset\(-option\)\?/ display
 
 syn match tmuxOptsSetw        /\(setw\|set-window-option\)/ display
-syn match tmuxSpecialCmds /^\s*\(setw\|set-window-option\)/ display
+syn match tmuxSpecialCmds /^\s*\zs\(setw\|set-window-option\)/ display
 
 " Why the `keepend` argument?{{{
 "
