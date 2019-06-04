@@ -45,7 +45,7 @@ syn keyword tmuxBindingCmds lsk list-keys send[-keys] send-prefix
 
 syn keyword tmuxEnvironmentCmds setenv set-environment showenv show-environment
 
-syn keyword tmuxStatusLineCmds command-prompt confirm[-before] display[-message]
+syn keyword tmuxStatusLineCmds command-prompt confirm[-before] display[-message] display-menu menu
 
 syn keyword tmuxBufferCmds choose-buffer clearhist clear-history deleteb
 syn keyword tmuxBufferCmds delete-buffer lsb list-buffers loadb load-buffer
@@ -57,7 +57,7 @@ syn keyword tmuxMiscCmds clock-mode if[-shell] lock[-server] wait[-for]
 syn keyword tmuxMiscCmds info server-info
 
 syn keyword tmuxOptsSet prefix prefix2 status status-fg status-bg bell-action
-syn keyword tmuxOptsSet default-command history-limit status-left status-right
+syn keyword tmuxOptsSet default-command history-file history-limit status-left status-right
 syn keyword tmuxOptsSet status-interval set-titles display-time buffer-limit
 syn keyword tmuxOptsSet status-left-length status-right-length status-position
 syn keyword tmuxOptsSet message-command-bg message-bg lock-after-time default-path
@@ -66,7 +66,7 @@ syn keyword tmuxOptsSet status-utf8 default-terminal visual-activity repeat-time
 syn keyword tmuxOptsSet visual-bell visual-content status-justify status-keys
 syn keyword tmuxOptsSet terminal-overrides status-left-attr status-left-bg
 syn keyword tmuxOptsSet status-left-fg status-right-attr status-right-bg
-syn keyword tmuxOptsSet status-right-fg update-environment base-index
+syn keyword tmuxOptsSet status-right-fg status-style update-environment base-index
 syn keyword tmuxOptsSet display-panes-colour display-panes-time default-shell
 syn keyword tmuxOptsSet set-titles-string lock-command lock-server
 syn keyword tmuxOptsSet mouse-select-pane message-limit quiet escape-time
@@ -103,21 +103,24 @@ syn keyword tmuxOptsSetw window-status-last-fg window-status-last-bg
 syn keyword tmuxOptsSetw pane-base-index other-pane-height other-pane-width
 syn keyword tmuxOptsSetw allow-rename c0-change-interval c0-change-trigger
 syn keyword tmuxOptsSetw layout-history-limit monitor-silence utf8 wrap-search
+syn keyword tmuxOptsSetw window-active-style window-style
+syn keyword tmuxOptsSetw pane-active-border-style pane-border-style
 
 " keywords for vi/emacs edit, choice and copy modes
 syn keyword tmuxModeCmds append-selection back-to-indentation backspace
 syn keyword tmuxModeCmds begin-selection bottom-line cancel choose clear-selection
-syn keyword tmuxModeCmds complete copy-end-of-line copy-pipe copy-selection
-syn keyword tmuxModeCmds cursor-down cursor-left cursor-right cursor-up delete
-syn keyword tmuxModeCmds delete-end-of-line delete-line delete-word down
+syn keyword tmuxModeCmds complete copy-end-of-line copy-pipe copy-pipe-and-cancel
+syn keyword tmuxModeCmds copy-selection copy-selection-and-cancel
+syn keyword tmuxModeCmds cursor-down cursor-left cursor-right cursor-up
+syn keyword tmuxModeCmds delete delete-end-of-line delete-line delete-word down
 syn keyword tmuxModeCmds end-of-line end-of-list enter goto-line halfpage-down
 syn keyword tmuxModeCmds halfpage-up history-bottom history-down history-top
 syn keyword tmuxModeCmds history-up jump-again jump-backward jump-forward
 syn keyword tmuxModeCmds jump-reverse jump-to-backward jump-to-forward middle-line
-syn keyword tmuxModeCmds next-space next-space-end next-word next-word-end other-end
-syn keyword tmuxModeCmds page-down page-up paste previous-space previous-word
+syn keyword tmuxModeCmds next-matching-bracket next-space next-space-end next-word next-word-end
+syn keyword tmuxModeCmds other-end page-down page-up paste previous-space previous-word
 syn keyword tmuxModeCmds rectangle-toggle scroll-down scroll-up search-again
-syn keyword tmuxModeCmds search-backward search-forward search-reverse
+syn keyword tmuxModeCmds search-backward search-forward search-reverse select-line
 syn keyword tmuxModeCmds start-named-buffer start-number-prefix start-of-line
 syn keyword tmuxModeCmds start-of-list switch-mode switch-mode-append
 syn keyword tmuxModeCmds switch-mode-append-line switch-mode-begin-line
@@ -208,6 +211,7 @@ syn region tmuxComment start=/#/ skip=/\\\@<!\\$/ end=/$/ contains=tmuxTodo,tmux
 syn keyword tmuxTodo FIXME NOTE TODO XXX todo contained
 
 syn match tmuxKey               /\(C-\|M-\|\^\)\+\S\+/  display
+syn match tmuxKey               /\%(^\s*\%(un\)\=bind\%(-key\)\=\s\+\%(\%(-T\s\+copy-mode-vi\|-r\)\s\+\)\=\)\@<=\S\+/ display
 syn match tmuxNumber            /\<[+-]\?\d\+/          display
 syn match tmuxSelWindowOption   /:[!+-]\?/              display
 syn match tmuxOptions           /\s-\a\+/               display
@@ -215,9 +219,7 @@ syn match tmuxVariable          /\w\+=/                 display
 syn match tmuxVariableExpansion /\${\=\w\+}\=/          display
 syn match tmuxAdditionalCommand /\\;/ display
 
-" concatenating flag '-t' or '-T' and table name is a valid syntax
-syn match tmuxKeyTable /\s\(-t\)\?\(vi-edit\|emacs-edit\|vi-choice\|emacs-choice\|vi-copy\|emacs-copy\)/ display
-syn match tmuxKeyTable /\s\(-T\)\?\(copy-mode\|copy-mode-vi\)/ display
+syn match tmuxKeyTable /\s\%(-T\)\=\(copy-mode-vi\|copy-mode\)/ display
 
 syn match tmuxColor /\(bright\)\?\(black\|red\|green\|yellow\|blue\|magenta\|cyan\|white\)/ display
 syn match tmuxColor /default/        display
