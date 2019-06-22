@@ -100,6 +100,7 @@ syn keyword tmuxOptsSetw window-status-content-attr
 syn keyword tmuxOptsSetw window-status-content-bg window-status-content-fg
 syn keyword tmuxOptsSetw window-status-separator window-status-last-attr
 syn keyword tmuxOptsSetw window-status-last-fg window-status-last-bg
+syn keyword tmuxOptsSetw window-status-activity-style window-status-bell-style
 syn keyword tmuxOptsSetw pane-base-index other-pane-height other-pane-width
 syn keyword tmuxOptsSetw allow-rename c0-change-interval c0-change-trigger
 syn keyword tmuxOptsSetw layout-history-limit monitor-silence utf8 wrap-search
