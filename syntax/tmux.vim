@@ -111,7 +111,7 @@ syn keyword tmuxOptsSetw pane-active-border-style pane-border-style
 syn keyword tmuxModeCmds append-selection back-to-indentation backspace
 syn keyword tmuxModeCmds begin-selection bottom-line cancel choose clear-selection
 syn keyword tmuxModeCmds complete copy-end-of-line copy-pipe copy-pipe-and-cancel
-syn keyword tmuxModeCmds copy-selection copy-selection-and-cancel
+syn keyword tmuxModeCmds copy-selection copy-selection-and-cancel copy-line
 syn keyword tmuxModeCmds cursor-down cursor-left cursor-right cursor-up
 syn keyword tmuxModeCmds delete delete-end-of-line delete-line delete-word down
 syn keyword tmuxModeCmds end-of-line end-of-list enter goto-line halfpage-down
@@ -121,7 +121,7 @@ syn keyword tmuxModeCmds jump-reverse jump-to-backward jump-to-forward middle-li
 syn keyword tmuxModeCmds next-matching-bracket next-space next-space-end next-word next-word-end
 syn keyword tmuxModeCmds other-end page-down page-up paste previous-space previous-word
 syn keyword tmuxModeCmds rectangle-toggle scroll-down scroll-up search-again
-syn keyword tmuxModeCmds search-backward search-forward search-reverse select-line
+syn keyword tmuxModeCmds search-backward search-forward search-reverse select-line select-word
 syn keyword tmuxModeCmds start-named-buffer start-number-prefix start-of-line
 syn keyword tmuxModeCmds start-of-list switch-mode switch-mode-append
 syn keyword tmuxModeCmds switch-mode-append-line switch-mode-begin-line
