@@ -1,3 +1,36 @@
+fu! tmux#paste_last_shell_cmd(n) abort "{{{1
+    let buffer = systemlist('tmux showb')
+    " Why don't you delete the tmux buffer from the tmux key binding which runs this Vim function?{{{
+    "
+    " Can't delete from  the tmux key binding because  `copy-pipe` and `if-shell`
+    " don't block, so there's no way to know when `deleteb` would be run.
+    " In practice,  it seems to  be run before Vim  is invoked, which  means that
+    " `$ tmux showb` wouldn't give the buffer you expect.
+    "}}}
+    call system('tmux deleteb')
+    if &ft isnot# 'markdown'
+        " run `redraw!` to clear the command-line
+        redraw! | return
+    endif
+    " Why `copy()`?{{{
+    "
+    " Because we're going to filter the list `buffer` with a test which involves
+    " the item *following* the one currently filtered.
+    " And because `filter()` may alter the size of `buffer` during the filtering.
+    "
+    " If the test only involved the current item, there would be no need for `copy()`.
+    "}}}
+    let buffer_copy = copy(buffer)
+    call filter(buffer, {i,_ -> get(buffer_copy, i+1, '') !~# '^٪'})
+    call map(buffer, {_,v -> substitute(v, '^[^٪].*\zs', '~', '')})
+    call map(buffer, {_,v -> substitute(v, '^٪', '$', '')})
+    let indent = matchstr(getline('.'), '^\s*')
+    call map(buffer, {_,v -> indent . v})
+    call append('.', buffer)
+    update | redraw!
+endfu
+"}}}1
+
 " K {{{1
 " keyword based jump dictionary maps {{{2
 
