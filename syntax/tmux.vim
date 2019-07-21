@@ -152,6 +152,21 @@ syn match tmuxSpecialCmds /^\s*\zsset\(-option\)\?/ display
 syn match tmuxOptsSetw        /\(setw\|set-window-option\)/ display
 syn match tmuxSpecialCmds /^\s*\zs\(setw\|set-window-option\)/ display
 
+" Why the `skip` argument?{{{
+"
+" Because of this undocumented syntax:
+"
+"                         v
+"     # some tmux comment \
+"     this second line is still considered commented by tmux!!!
+"
+" This  is because  tmux joins  continuation  lines, *then*  checks whether  the
+" resulting line is commented:
+" https://github.com/tmux/tmux/issues/75#issuecomment-130452290
+"
+" I don't want to wrongly think that a  line of code is sourced, while in effect
+" it is *not*.
+"}}}
 " Why the `keepend` argument?{{{
 "
 " To  prevent  a  commented  codeblock  from continuing  on  the  next  line  of
@@ -162,7 +177,7 @@ syn match tmuxSpecialCmds /^\s*\zs\(setw\|set-window-option\)/ display
 "
 " In this example, without `keepend`, the `set` line would be wrongly commented.
 "}}}
-" Does it cause an issue?{{{
+"   Does it cause an issue?{{{
 "
 " Yes.
 "
@@ -187,25 +202,10 @@ syn match tmuxSpecialCmds /^\s*\zs\(setw\|set-window-option\)/ display
 "     # comment \
 "     continuation of comment
 "}}}
-" Why does `tmuxComment` need keepend, but not other similar syntax groups like `shComment`?{{{
+"   Why other similar syntax groups like `shComment` don't need `keepend`?{{{
 "
 " `shComment` is a match, so no issue.
 " But `tmuxComment` *must* be a region, because we need `skip`.
-"}}}
-" Why the `skip` argument?{{{
-"
-" Because of this undocumented syntax:
-"
-"                         v
-"     # some tmux comment \
-"     this second line is still considered commented by tmux!!!
-"
-" This  is because  tmux joins  continuation  lines, *then*  checks whether  the
-" resulting line is commented:
-" https://github.com/tmux/tmux/issues/75#issuecomment-130452290
-"
-" I don't want to wrongly think that a  line of code is sourced, while in effect
-" it is *not*.
 "}}}
 syn region tmuxComment start=/#/ skip=/\\\@<!\\$/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell keepend
 

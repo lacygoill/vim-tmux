@@ -13,3 +13,6 @@ let g:loaded_tmux = 1
 "}}}
 com! -bar -nargs=1 TxPasteLastShellCmd call tmux#paste_last_shell_cmd(<args>)
 
+nno <unique><silent> <bar>x     :<c-u>call tmux#run#command(0)<cr>
+nno <unique><silent> <bar><bar> :<c-u>call tmux#run#command(1)<cr>
+

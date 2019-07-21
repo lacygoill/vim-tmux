@@ -1,6 +1,3 @@
-if exists('current_compiler')
-    finish
-endif
 let current_compiler = 'tmux'
 
 if exists(':CompilerSet') != 2
