@@ -2,17 +2,22 @@
 fu! tmux#run#command(repeat) abort "{{{2
     if !exists('$TMUX')
         echo 'requires Tmux' | return
-    elseif a:repeat && !exists('s:last_cmd')
-        echo 'no command to repeat' | return
     endif
     if !a:repeat
         let cmd = s:get_cmd()
         if empty(cmd) | return | endif
+    elseif a:repeat && !exists('s:last_cmd')
+        if s:is_other_shell_pane()
+            call system('tmux send -t! Up Enter')
+        else
+            echo 'no command to repeat'
+        endif
+        return
     endif
     " remove `s:pane_id` if we manually closed the pane associated to it,
     " otherwise the function will think there's no need to create a pane
-    if exists('s:pane_id') | call s:clear_pane_id() | endif
-    call s:open_pane()
+    call s:clear_stale_pane_id()
+    if !exists('s:pane_id') | call s:open_pane() | endif
     call s:close_pane('later')
     if a:repeat
         call s:run_shell_cmd(s:last_cmd)
@@ -31,7 +36,14 @@ fu! s:get_cmd() abort "{{{2
     endif
     " Note that we don't exclude the whitespace which follows the `$` shell prompt.
     " This will make sure that when the command is run, zsh doesn't log it in its history.
-    let cmd = matchstr(getline('.'), '^\s*'..cml..'\s*\$\zs.*')
+    let cmd = matchstr(getline('.'), '^\s*'..cml..'\s*\$\zs\s.*')
+    " support continuation lines
+    if cmd =~# '\\\s*$'
+        let end = search('\%(\\\s*\)\@<!$', 'nW')
+        if end == 0 | let end = line('$') | endif
+        let lines = [cmd] + getline(line('.')+1, end)
+        let cmd = join(map(lines, {_,v -> substitute(v, '\\\s*$', '', '')}))
+    endif
     if empty(cmd)
         if &ft is# 'python'
             sil! update
@@ -45,7 +57,10 @@ fu! s:get_cmd() abort "{{{2
     return cmd
 endfu
 
-fu! s:clear_pane_id() abort "{{{2
+fu! s:clear_stale_pane_id() abort "{{{2
+    if !exists('s:pane_id')
+        return
+    endif
     sil let open_panes = systemlist("tmux lsp -F '#D'")
     let is_pane_still_open = index(open_panes, s:pane_id) >= 0
     if !is_pane_still_open
@@ -57,11 +72,11 @@ endfu
 
 fu! s:open_pane() abort "{{{2
     let cmds = [
-        \ 'splitw -c',
-        \ shellescape('/run/user/1000/tmp'),
-        \ '-d -p 25 -PF "#D"'
-        \ ]
-        let s:pane_id = system('tmux '..join(cmds))[:-2]
+    \ 'splitw -c',
+    \ shellescape('/run/user/1000/tmp'),
+    \ '-d -p 25 -PF "#D"'
+    \ ]
+    let s:pane_id = system('tmux '..join(cmds))[:-2]
 endfu
 
 fu! s:close_pane(when) abort "{{{2
@@ -85,7 +100,7 @@ fu! s:close_pane(when) abort "{{{2
     else
         try
             sil call system('tmux killp -t '..s:pane_id)
-            unlet! s:pane_id
+            unlet! s:pane_id s:last_cmd
             au! tmux_run_cmd_close_pane
         catch
             return lg#catch_error()
@@ -108,7 +123,14 @@ fu! s:run_shell_cmd(cmd) abort "{{{2
         let cmd = cmd[:-2]..'\;'
     endif
     let tmux_cmd = 'tmux send -t '..s:pane_id..' -l '..shellescape(cmd)
-            \ ..'     \; send -t '..s:pane_id..' C-m'
+    \ ..'     \; send -t '..s:pane_id..' C-m'
     sil call system(tmux_cmd)
+endfu
+"}}}1
+" Utilities {{{1
+fu! s:is_other_shell_pane() abort "{{{2
+    let info = system("tmux display -p -t! '#{window_panes}\<c-a>#{pane_current_command}'")[:-2]
+    let [number_of_panes, command_in_last_pane] = split(info, "\<c-a>")
+    return number_of_panes > 1 && command_in_last_pane =~# '^\%(bash\|dash\|zsh\)$'
 endfu
 
