@@ -229,7 +229,7 @@ syn match tmuxColor /#\x\{6}/        display
 
 syn match tmuxStyle /\(no\)\?\(bright\|bold\|dim\|underscore\|blink\|reverse\|hidden\|italics\)/ display
 
-syn match tmuxPromptInpol /%[[:digit:]%]/ contained
+syn match tmuxPromptInpol /%\d\|%%%\=/ contained
 
 " Matching `man 3 strftime` formats
 syn match tmuxDateInpol /%[0_^#-]\?[A-DF-IMR-Z+]/     contained
