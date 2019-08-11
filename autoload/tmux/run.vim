@@ -8,6 +8,7 @@ fu! tmux#run#command(repeat) abort "{{{2
         if empty(cmd) | return | endif
     elseif a:repeat && !exists('s:last_cmd')
         if s:is_other_shell_pane()
+            if s:is_zoomed_window() | call s:unzoom_window() | endif
             call system('tmux send -t! Up Enter')
         else
             echo 'no command to repeat'
@@ -20,12 +21,15 @@ fu! tmux#run#command(repeat) abort "{{{2
     if !exists('s:pane_id') | call s:open_pane() | endif
     call s:close_pane('later')
     if a:repeat
+        if s:is_zoomed_window() | call s:unzoom_window() | endif
         call s:run_shell_cmd(s:last_cmd)
     else
+        if s:is_zoomed_window() | call s:unzoom_window() | endif
         call s:run_shell_cmd(cmd)
         let s:last_cmd = cmd
     endif
 endfu
+
 "}}}1
 " Core {{{1
 fu! s:get_cmd() abort "{{{2
@@ -132,5 +136,13 @@ fu! s:is_other_shell_pane() abort "{{{2
     let info = system("tmux display -p -t! '#{window_panes}\<c-a>#{pane_current_command}'")[:-2]
     let [number_of_panes, command_in_last_pane] = split(info, "\<c-a>")
     return number_of_panes > 1 && command_in_last_pane =~# '^\%(bash\|dash\|zsh\)$'
+endfu
+
+fu! s:is_zoomed_window() abort "{{{2
+    return system('tmux display -p "#{window_zoomed_flag}"')[:-2]
+endfu
+
+fu! s:unzoom_window() abort "{{{2
+    call system('tmux resizep -Z')
 endfu
 
