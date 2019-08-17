@@ -212,7 +212,7 @@ syn region tmuxComment start=/#/ skip=/\\\@<!\\$/ end=/$/ contains=tmuxTodo,tmux
 syn keyword tmuxTodo FIXME NOTE TODO XXX todo contained
 
 syn match tmuxKey               /\(C-\|M-\|\^\)\+\S\+/  display
-syn match tmuxKey               /\%(^\s*\%(un\)\=bind\%(-key\)\=\s\+\%(\%(-T\s\+copy-mode-vi\|-r\)\s\+\)\=\)\@<=\S\+/ display
+syn match tmuxKey               /\%(^\s*\%(un\)\=bind\%(-key\)\=\s\+\%(\%(-T\s\+\%(copy-mode-vi\|copy-mode\|root\)\|-r\)\s\+\)\=\)\@<=\S\+/ display
 syn match tmuxNumber            /\<[+-]\?\d\+/          display
 syn match tmuxSelWindowOption   /:[!+-]\?/              display
 syn match tmuxOptions           /\s-\a\+/               display
@@ -220,7 +220,7 @@ syn match tmuxVariable          /\w\+=/                 display
 syn match tmuxVariableExpansion /\${\=\w\+}\=/          display
 syn match tmuxAdditionalCommand /\\;/ display
 
-syn match tmuxKeyTable /\s\%(-T\)\=\(copy-mode-vi\|copy-mode\)/ display
+syn match tmuxKeyTable /\s\%(-T\)\=\(copy-mode-vi\|copy-mode\|root\)/ display
 
 syn match tmuxColor /\(bright\)\?\(black\|red\|green\|yellow\|blue\|magenta\|cyan\|white\)/ display
 syn match tmuxColor /default/        display
