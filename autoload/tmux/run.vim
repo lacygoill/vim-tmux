@@ -1,15 +1,13 @@
 " Interface {{{1
 fu! tmux#run#command(repeat) abort "{{{2
-    if !exists('$TMUX')
-        echo 'requires Tmux' | return
-    endif
+    if !exists('$TMUX') | echo 'requires Tmux' | return | endif
     if !a:repeat
         let cmd = s:get_cmd()
         if empty(cmd) | return | endif
     elseif a:repeat && !exists('s:last_cmd')
-        if s:is_other_shell_pane()
+        if s:previous_pane_runs_shell()
             if s:is_zoomed_window() | call s:unzoom_window() | endif
-            call system('tmux send -t! Up Enter')
+            call system('tmux send -t! C-e C-u Up Enter')
         else
             echo 'no command to repeat'
         endif
@@ -18,7 +16,30 @@ fu! tmux#run#command(repeat) abort "{{{2
     " remove `s:pane_id` if we manually closed the pane associated to it,
     " otherwise the function will think there's no need to create a pane
     call s:clear_stale_pane_id()
-    if !exists('s:pane_id') | call s:open_pane() | endif
+    " TODO: What if we have run a shell command which has started Vim in the other pane.{{{
+    "
+    " In that case,  `s:pane_id` will exist and our next command will be sent there.
+    " But we don't that.
+    "
+    " What should we do?
+    " Make Vim quit? But then, what about other fullscreen programs, like cmus, weechat, newsboat...
+    " Open another tmux pane? Maybe...
+    " Then we need to handle another case:
+    "
+    "     if exists('s:pane_id') && ! s:previous_pane_runs_shell()
+    "         call s:open_pane_and_save_id()
+    "     endif
+    "
+    " It seems like a corner case; is it worth the trouble?
+    "}}}
+    if !exists('s:pane_id')
+        " if the previous pane runs a shell, let's use it
+        if s:previous_pane_runs_shell()
+            let s:pane_id = s:get_previous_pane_id()
+        else
+            call s:open_pane_and_save_id()
+        endif
+    endif
     call s:close_pane('later')
     if a:repeat
         if s:is_zoomed_window() | call s:unzoom_window() | endif
@@ -29,7 +50,6 @@ fu! tmux#run#command(repeat) abort "{{{2
         let s:last_cmd = cmd
     endif
 endfu
-
 "}}}1
 " Core {{{1
 fu! s:get_cmd() abort "{{{2
@@ -62,9 +82,7 @@ fu! s:get_cmd() abort "{{{2
 endfu
 
 fu! s:clear_stale_pane_id() abort "{{{2
-    if !exists('s:pane_id')
-        return
-    endif
+    if !exists('s:pane_id') | return | endif
     sil let open_panes = systemlist("tmux lsp -F '#D'")
     let is_pane_still_open = index(open_panes, s:pane_id) >= 0
     if !is_pane_still_open
@@ -74,12 +92,12 @@ fu! s:clear_stale_pane_id() abort "{{{2
     endif
 endfu
 
-fu! s:open_pane() abort "{{{2
+fu! s:open_pane_and_save_id() abort "{{{2
     let cmds = [
-    \ 'splitw -c',
-    \ shellescape('/run/user/1000/tmp'),
-    \ '-d -p 25 -PF "#D"'
-    \ ]
+        \ 'splitw -c',
+        \ shellescape('/run/user/1000/tmp'),
+        \ '-d -p 25 -PF "#D"'
+        \ ]
     let s:pane_id = system('tmux '..join(cmds))[:-2]
 endfu
 
@@ -123,19 +141,58 @@ fu! s:run_shell_cmd(cmd) abort "{{{2
     " https://github.com/tmux/tmux/issues/1849
     " https://github.com/jebaum/vim-tmuxify/issues/11
     "}}}
-    if cmd[-1:] is# ';'
-        let cmd = cmd[:-2]..'\;'
-    endif
-    let tmux_cmd = 'tmux send -t '..s:pane_id..' -l '..shellescape(cmd)
-    \ ..'     \; send -t '..s:pane_id..' C-m'
+    if cmd[-1:] is# ';' | let cmd = cmd[:-2]..'\;' | endif
+    let tmux_cmd = 'tmux send -t '..s:pane_id..' C-e C-u'
+        \ ..' \;         send -t '..s:pane_id..' -l '..shellescape(cmd)
+        \ ..' \;         send -t '..s:pane_id..' C-m'
     sil call system(tmux_cmd)
 endfu
 "}}}1
 " Utilities {{{1
-fu! s:is_other_shell_pane() abort "{{{2
-    let info = system("tmux display -p -t! '#{window_panes}\<c-a>#{pane_current_command}'")[:-2]
-    let [number_of_panes, command_in_last_pane] = split(info, "\<c-a>")
-    return number_of_panes > 1 && command_in_last_pane =~# '^\%(bash\|dash\|zsh\)$'
+fu! s:previous_pane_runs_shell() abort "{{{2
+    let number_of_panes = system("tmux display -p '#{window_panes}'")[:-2]
+    if number_of_panes < 2 | return 0 | endif
+
+    " TODO: What if we have run `$ echo text | vim -` in the previous pane.{{{
+    "
+    "     $ tmux display -p -t! '#{pane_current_command}'
+    "     zsh~
+    "
+    " Maybe we should also make sure that `[No Name]` can't be found in the pane.
+    " If it  can, Vim  is probably  running, and  we don't  want our  next shell
+    " command to be written there.
+    "
+    " Note that – I think – you need to escape the brackets:
+    "
+    "     $ tmux display -p -t! '#{C:\[No Name\]}'
+    "
+    " Otherwise you can get weird results:
+    "
+    "     # open xterm
+    "     $ tmux -Lx
+    "     $ tmux splitw
+    "     $ vim
+    "     :lastp
+    "     $ tmux display -p -t! '#{C:[No Name]}'
+    "     10~
+    "     $ tmux lastp
+    "     :q
+    "     $ tmux lastp
+    "     $ tmux display -p -t! '#{C:[No Name]}'
+    "     2~
+    "
+    " The last command should output 0.
+    "
+    " I haven't  tried to  implement this  for the moment,  because last  time I
+    " tried, I got unexpected and inconsistent results.
+    " Besides, it seems like a corner case; is it worth the trouble?
+    "}}}
+    let cmd_in_previous_pane = system("tmux display -p -t! '#{pane_current_command}'")[:-2]
+    return cmd_in_previous_pane =~# '^\%(bash\|dash\|zsh\)$'
+endfu
+
+fu! s:get_previous_pane_id() abort "{{{2
+    return system("tmux display -p -t! '#{pane_id}'")[:-2]
 endfu
 
 fu! s:is_zoomed_window() abort "{{{2
