@@ -36,7 +36,7 @@ fu! s:remove_first_prompt_line_with_cwd(buffer) abort
     " If the test only involved the current item, there would be no need for `copy()`.
     "}}}
     let buffer_copy = copy(a:buffer)
-    call filter(a:buffer, {i,_ -> get(buffer_copy, i+1, '') !~# '^٪'})
+    call filter(a:buffer, {i -> get(buffer_copy, i+1, '') !~# '^٪'})
 endfu
 "}}}1
 
