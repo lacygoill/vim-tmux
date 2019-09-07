@@ -7,7 +7,7 @@ fu! tmux#run#command(repeat) abort "{{{2
     elseif a:repeat && !exists('s:last_cmd')
         if s:previous_pane_runs_shell()
             if s:is_zoomed_window() | call s:unzoom_window() | endif
-            call system('tmux send -t! C-e C-u Up Enter')
+            sil call system('tmux send -t! C-e C-u Up Enter')
         else
             echo 'no command to repeat'
         endif
@@ -98,7 +98,7 @@ fu! s:open_pane_and_save_id() abort "{{{2
         \ shellescape('/run/user/1000/tmp'),
         \ '-d -p 25 -PF "#D"'
         \ ]
-    let s:pane_id = system('tmux '..join(cmds))[:-2]
+    sil let s:pane_id = system('tmux '..join(cmds))[:-2]
 endfu
 
 fu! s:close_pane(when) abort "{{{2
@@ -150,7 +150,7 @@ endfu
 "}}}1
 " Utilities {{{1
 fu! s:previous_pane_runs_shell() abort "{{{2
-    let number_of_panes = system("tmux display -p '#{window_panes}'")[:-2]
+    sil let number_of_panes = system("tmux display -p '#{window_panes}'")[:-2]
     if number_of_panes < 2 | return 0 | endif
 
     " TODO: What if we have run `$ echo text | vim -` in the previous pane.{{{
@@ -187,19 +187,19 @@ fu! s:previous_pane_runs_shell() abort "{{{2
     " tried, I got unexpected and inconsistent results.
     " Besides, it seems like a corner case; is it worth the trouble?
     "}}}
-    let cmd_in_previous_pane = system("tmux display -p -t! '#{pane_current_command}'")[:-2]
+    sil let cmd_in_previous_pane = system("tmux display -p -t! '#{pane_current_command}'")[:-2]
     return cmd_in_previous_pane =~# '^\%(bash\|dash\|zsh\)$'
 endfu
 
 fu! s:get_previous_pane_id() abort "{{{2
-    return system("tmux display -p -t! '#{pane_id}'")[:-2]
+    sil return system("tmux display -p -t! '#{pane_id}'")[:-2]
 endfu
 
 fu! s:is_zoomed_window() abort "{{{2
-    return system('tmux display -p "#{window_zoomed_flag}"')[:-2]
+    sil return system('tmux display -p "#{window_zoomed_flag}"')[:-2]
 endfu
 
 fu! s:unzoom_window() abort "{{{2
-    call system('tmux resizep -Z')
+    sil call system('tmux resizep -Z')
 endfu
 

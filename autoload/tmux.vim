@@ -1,5 +1,5 @@
 fu! tmux#paste_last_shell_cmd(n) abort "{{{1
-    let buffer = systemlist('tmux showb')
+    sil let buffer = systemlist('tmux showb')
     " Why don't you delete the tmux buffer from the tmux key binding which runs this Vim function?{{{
     "
     " `copy-pipe` and  `if-shell` don't block,  so there's  no way to  know when
@@ -7,7 +7,7 @@ fu! tmux#paste_last_shell_cmd(n) abort "{{{1
     " In practice,  it seems to  be run before Vim  is invoked, which  means that
     " `$ tmux showb` wouldn't give the buffer you expect.
     "}}}
-    call system('tmux deleteb')
+    sil call system('tmux deleteb')
     if &ft isnot# 'markdown'
         " run `redraw!` to clear the command-line
         redraw! | return
@@ -320,7 +320,7 @@ fu! tmux#filterop(type) abort
                 let all_output = command
             endif
 
-            let output = system(command)
+            sil let output = system(command)
             if v:shell_error
                 " reset `v:shell_error`
                 call system('')
