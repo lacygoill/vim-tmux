@@ -338,7 +338,8 @@ fu! tmux#filterop(type) abort
         endif
     catch /^.*/
         redraw
-        echo all_output | echohl ErrorMSG | echo v:exception | echohl NONE
+        echo all_output
+        return lg#catch_error()
     finally
         let @@ = reg_save
     endtry
