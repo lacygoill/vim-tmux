@@ -272,9 +272,9 @@ fu! s:opfunc(type) abort
              sil exe 'norm! ^v'.a:type.'$hy'
         elseif a:type =~# '^.$'
              sil exe "norm! `<" . a:type . "`>y"
-        elseif a:type ==# 'line'
+        elseif a:type is# 'line'
              norm! '[V']y
-        elseif a:type ==# 'block'
+        elseif a:type is# 'block'
              sil exe "norm! `[\<c-V>`]y"
         else
              norm! `[v`]y
@@ -300,12 +300,12 @@ fu! tmux#filterop(type) abort
 
             " if line is a part of multi-line string (those have '\' at the end)
             " and not last line, perform " concatenation
-            while line =~# '\\\s*$' && index !=# len(lines)-1
+            while line =~# '\\\s*$' && index != len(lines)-1
                 let index += 1
                 " remove '\' from line end
                 let line = substitute(line, '\\\s*$', '', '')
                 " append next line
-                let line .= lines[index]
+                let line ..= lines[index]
             endwhile
 
             " skip empty line and comments
@@ -315,7 +315,7 @@ fu! tmux#filterop(type) abort
 
             let command = 'tmux '.line
             if all_output =~# '\S'
-                let all_output .= "\n".command
+                let all_output ..= "\n".command
             else  " empty var, do not include newline first
                 let all_output = command
             endif
@@ -326,7 +326,7 @@ fu! tmux#filterop(type) abort
                 call system('')
                 throw output
             elseif output =~# '\S'
-                let all_output .= "\n> ".output[0:-2]
+                let all_output ..= "\n> ".output[0:-2]
             endif
 
             let index += 1
