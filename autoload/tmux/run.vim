@@ -1,5 +1,5 @@
 " Interface {{{1
-fu! tmux#run#command(repeat) abort "{{{2
+fu tmux#run#command(repeat) abort "{{{2
     if !exists('$TMUX') | echo 'requires Tmux' | return | endif
     if !a:repeat
         let cmd = s:get_cmd()
@@ -52,7 +52,7 @@ fu! tmux#run#command(repeat) abort "{{{2
 endfu
 "}}}1
 " Core {{{1
-fu! s:get_cmd() abort "{{{2
+fu s:get_cmd() abort "{{{2
     if &ft isnot# 'markdown'
         let cml = matchstr(get(split(&l:cms, '%s'), 0, ''), '\S\+')
     else
@@ -81,7 +81,7 @@ fu! s:get_cmd() abort "{{{2
     return cmd
 endfu
 
-fu! s:clear_stale_pane_id() abort "{{{2
+fu s:clear_stale_pane_id() abort "{{{2
     if !exists('s:pane_id') | return | endif
     sil let open_panes = systemlist("tmux lsp -F '#D'")
     let is_pane_still_open = index(open_panes, s:pane_id) >= 0
@@ -92,7 +92,7 @@ fu! s:clear_stale_pane_id() abort "{{{2
     endif
 endfu
 
-fu! s:open_pane_and_save_id() abort "{{{2
+fu s:open_pane_and_save_id() abort "{{{2
     let cmds = [
         \ 'splitw -c',
         \ shellescape('/run/user/1000/tmp'),
@@ -101,7 +101,7 @@ fu! s:open_pane_and_save_id() abort "{{{2
     sil let s:pane_id = system('tmux '..join(cmds))[:-2]
 endfu
 
-fu! s:close_pane(when) abort "{{{2
+fu s:close_pane(when) abort "{{{2
     if a:when is# 'later'
         augroup tmux_run_cmd_close_pane
             " Is it ok to remove *all* autocmds?{{{
@@ -130,7 +130,7 @@ fu! s:close_pane(when) abort "{{{2
     endif
 endfu
 
-fu! s:run_shell_cmd(cmd) abort "{{{2
+fu s:run_shell_cmd(cmd) abort "{{{2
     let cmd = substitute(a:cmd, '\\\s\+$', '\', '')
     " https://github.com/jebaum/vim-tmuxify/issues/16
     let cmd = substitute(a:cmd, '\t', ' ', 'g')
@@ -149,7 +149,7 @@ fu! s:run_shell_cmd(cmd) abort "{{{2
 endfu
 "}}}1
 " Utilities {{{1
-fu! s:previous_pane_runs_shell() abort "{{{2
+fu s:previous_pane_runs_shell() abort "{{{2
     sil let number_of_panes = system("tmux display -p '#{window_panes}'")[:-2]
     if number_of_panes < 2 | return 0 | endif
 
@@ -191,15 +191,15 @@ fu! s:previous_pane_runs_shell() abort "{{{2
     return cmd_in_previous_pane =~# '^\%(bash\|dash\|zsh\)$'
 endfu
 
-fu! s:get_previous_pane_id() abort "{{{2
+fu s:get_previous_pane_id() abort "{{{2
     sil return system("tmux display -p -t! '#{pane_id}'")[:-2]
 endfu
 
-fu! s:is_zoomed_window() abort "{{{2
+fu s:is_zoomed_window() abort "{{{2
     sil return system('tmux display -p "#{window_zoomed_flag}"')[:-2]
 endfu
 
-fu! s:unzoom_window() abort "{{{2
+fu s:unzoom_window() abort "{{{2
     sil call system('tmux resizep -Z')
 endfu
 

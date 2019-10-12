@@ -1,4 +1,4 @@
-fu! tmux#paste_last_shell_cmd(n) abort "{{{1
+fu tmux#paste_last_shell_cmd(n) abort "{{{1
     sil let buffer = systemlist('tmux showb')
     " Why don't you delete the tmux buffer from the tmux key binding which runs this Vim function?{{{
     "
@@ -26,7 +26,7 @@ fu! tmux#paste_last_shell_cmd(n) abort "{{{1
     update | redraw!
 endfu
 
-fu! s:remove_first_prompt_line_with_cwd(buffer) abort
+fu s:remove_first_prompt_line_with_cwd(buffer) abort
     " Why `copy()`?{{{
     "
     " Because we're going to filter the list `buffer` with a test which involves
@@ -151,13 +151,13 @@ let s:highlight_group_manpage_section = {
 
 " keyword based jump {{{2
 
-fu! s:get_search_keyword(keyword) abort
+fu s:get_search_keyword(keyword) abort
     return has_key(s:keyword_mappings, a:keyword)
         \ ?     s:keyword_mappings[a:keyword]
         \ :     a:keyword
 endfu
 
-fu! s:man_tmux_search(section, regex) abort
+fu s:man_tmux_search(section, regex) abort
     try
         call search('^'.a:section)
         call search(a:regex)
@@ -167,7 +167,7 @@ fu! s:man_tmux_search(section, regex) abort
     endtry
 endfu
 
-fu! s:keyword_based_jump(highlight_group, keyword) abort
+fu s:keyword_based_jump(highlight_group, keyword) abort
     let section = has_key(s:highlight_group_manpage_section, a:highlight_group)
         \ ?     s:highlight_group_manpage_section[a:highlight_group]
         \ :     ''
@@ -213,7 +213,7 @@ let s:highlight_group_to_match_mapping = {
 \ 'tmuxShellInpolDelimiter': ['OPTIONS', '^\s\+\zsstatus-left', '']
 \ }
 
-fu! s:highlight_group_based_jump(highlight_group, keyword) abort
+fu s:highlight_group_based_jump(highlight_group, keyword) abort
     Man tmux
     let section = s:highlight_group_to_match_mapping[a:highlight_group][0]
     let search_string = s:highlight_group_to_match_mapping[a:highlight_group][1]
@@ -231,23 +231,24 @@ endfu
 
 " just open manpage {{{2
 
-fu! s:just_open_manpage(highlight_group) abort
+fu s:just_open_manpage(highlight_group) abort
     let char_under_cursor = matchstr(getline('.'), '\%'.col('.').'c.')
-    return index([
-        \ '',
-        \ 'tmuxStringDelimiter',
-        \ 'tmuxOptions',
-        \ 'tmuxAction',
-        \ 'tmuxBoolean',
-        \ 'tmuxOptionValue',
-        \ 'tmuxNumber'],
-        \ a:highlight_group) >= 0 ||
+    let syn_groups =<< trim END
+
+        tmuxStringDelimiter
+        tmuxOptions
+        tmuxAction
+        tmuxBoolean
+        tmuxOptionValue
+        tmuxNumber
+    END
+    return index(syn_groups, a:highlight_group) >= 0 ||
         \ char_under_cursor =~# '\s'
 endfu
 
 " 'public' function {{{2
 
-fu! tmux#man(...) abort
+fu tmux#man(...) abort
     let keyword = expand('<cWORD>')
 
     let highlight_group = synIDattr(synID(line('.'), col('.'), 1), 'name')
@@ -262,7 +263,7 @@ endfu
 " }}}1
 " g! {{{1
 
-fu! s:opfunc(type) abort
+fu s:opfunc(type) abort
     let sel_save = &selection
     let cb_save = &clipboard
     let reg_save = @@
@@ -288,7 +289,7 @@ fu! s:opfunc(type) abort
     endtry
 endfu
 
-fu! tmux#filterop(type) abort
+fu tmux#filterop(type) abort
     let reg_save = @@
     try
         let expr = s:opfunc(a:type)
