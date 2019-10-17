@@ -235,12 +235,12 @@ fu s:just_open_manpage(highlight_group) abort
     let char_under_cursor = matchstr(getline('.'), '\%'.col('.').'c.')
     let syn_groups =<< trim END
 
-        tmuxStringDelimiter
-        tmuxOptions
-        tmuxAction
-        tmuxBoolean
-        tmuxOptionValue
-        tmuxNumber
+    tmuxStringDelimiter
+    tmuxOptions
+    tmuxAction
+    tmuxBoolean
+    tmuxOptionValue
+    tmuxNumber
     END
     return index(syn_groups, a:highlight_group) >= 0 ||
         \ char_under_cursor =~# '\s'
