@@ -207,7 +207,7 @@ syn match tmuxSpecialCmds /^\s*\zs\(setw\|set-window-option\)/ display
 " `shComment` is a match, so no issue.
 " But `tmuxComment` *must* be a region, because we need `skip`.
 "}}}
-syn region tmuxComment start=/#/ skip=/\\\@<!\\$/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell keepend
+syn region tmuxComment start=/#/ skip=/\\\@1<!\\$/ end=/$/ contains=tmuxTodo,tmuxURL,@Spell keepend
 
 syn keyword tmuxTodo FIXME NOTE TODO XXX todo contained
 
