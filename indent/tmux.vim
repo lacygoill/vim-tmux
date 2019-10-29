@@ -5,9 +5,9 @@ endif
 setl indentexpr=tmux#indent()
 setl indentkeys=o
 
-" teardown {{{1
+" Teardown {{{1
 
 let b:undo_indent = get(b:, 'undo_indent', 'exe')
-    \ ..' | setl indk< inde<'
+    \ ..'| setl indk< inde<'
 
 let b:did_indent = 1

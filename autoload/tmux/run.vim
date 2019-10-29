@@ -1,10 +1,11 @@
 " Interface {{{1
-fu tmux#run#command(repeat) abort "{{{2
+fu tmux#run#command(...) abort "{{{2
+    let repeat = ! a:0
     if !exists('$TMUX') | echo 'requires Tmux' | return | endif
-    if !a:repeat
+    if !repeat
         let cmd = s:get_cmd()
         if empty(cmd) | return | endif
-    elseif a:repeat && !exists('s:last_cmd')
+    elseif repeat && !exists('s:last_cmd')
         if s:previous_pane_runs_shell()
             if s:is_zoomed_window() | call s:unzoom_window() | endif
             sil call system('tmux send -t! C-e C-u Up Enter')
@@ -41,7 +42,7 @@ fu tmux#run#command(repeat) abort "{{{2
         endif
     endif
     call s:close_pane('later')
-    if a:repeat
+    if repeat
         if s:is_zoomed_window() | call s:unzoom_window() | endif
         call s:run_shell_cmd(s:last_cmd)
     else

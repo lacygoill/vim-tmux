@@ -13,15 +13,8 @@ xno <buffer><nowait><silent> g"  :<c-u>call tmux#filterop(visualmode())<cr>
 
 compiler tmux
 
-" teardown {{{1
+" Teardown {{{1
 
 let b:undo_ftplugin = get(b:, 'undo_ftplugin', 'exe')
-    \ ..'
-    \ | setl cms<
-    \ | set efm< mp<
-    \ | exe "nunmap <buffer> K"
-    \ | exe "nunmap <buffer> g\""
-    \ | exe "nunmap <buffer> g\"\""
-    \ | exe "xunmap <buffer> g\""
-    \ '
+    \ ..'| call tmux#undo_ftplugin()'
 

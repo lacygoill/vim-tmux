@@ -38,6 +38,15 @@ fu s:remove_first_prompt_line_with_cwd(buffer) abort
     let buffer_copy = copy(a:buffer)
     call filter(a:buffer, {i -> get(buffer_copy, i+1, '') !~# '^٪'})
 endfu
+
+fu tmux#undo_ftplugin() abort "{{{1
+    setl cms<
+    set efm< mp<
+    nunmap <buffer> K
+    nunmap <buffer> g"
+    nunmap <buffer> g""
+    xunmap <buffer> g"
+endfu
 "}}}1
 
 " K {{{1
