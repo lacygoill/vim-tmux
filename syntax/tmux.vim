@@ -227,7 +227,15 @@ syn match tmuxColor /default/        display
 syn match tmuxColor /colour\d\{1,3}/ display
 syn match tmuxColor /#\x\{6}/        display
 
-syn match tmuxStyle /\(no\)\?\(bright\|bold\|dim\|underscore\|blink\|reverse\|hidden\|italics\)/ display
+" Why `-\@1<!`?{{{
+"
+" Because of the `search-reverse` command.
+"
+"     send -X search-reverse
+"                    ^^^^^^^
+"                    we don't want that to be highlighted by `tmuxStyle`
+"}}}
+syn match tmuxStyle /\(no\)\?\(bright\|bold\|dim\|underscore\|blink\|-\@1<!reverse\|hidden\|italics\)/ display
 
 syn match tmuxPromptInpol /%\d\|%%%\=/ contained
 
