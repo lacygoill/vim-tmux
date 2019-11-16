@@ -20,7 +20,7 @@ fu tmux#run#command(...) abort "{{{2
     " TODO: What if we have run a shell command which has started Vim in the other pane.{{{
     "
     " In that case,  `s:pane_id` will exist and our next command will be sent there.
-    " But we don't that.
+    " But we don't want that.
     "
     " What should we do?
     " Make Vim quit? But then, what about other fullscreen programs, like cmus, weechat, newsboat...
