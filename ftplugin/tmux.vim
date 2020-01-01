@@ -5,8 +5,6 @@ let b:did_ftplugin = 1
 
 setl cms=#\ %s
 
-nno <buffer><nowait><silent> K :<c-u>call tmux#man()<cr>
-
 nno <buffer><nowait><silent> g"  :<c-u>set opfunc=tmux#filterop<cr>g@
 nno <buffer><nowait><silent> g"" :<c-u>set opfunc=tmux#filterop<bar>norm! g@_<cr>
 xno <buffer><nowait><silent> g"  :<c-u>call tmux#filterop(visualmode())<cr>

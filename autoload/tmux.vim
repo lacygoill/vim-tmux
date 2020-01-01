@@ -42,7 +42,6 @@ endfu
 fu tmux#undo_ftplugin() abort "{{{1
     setl cms<
     set efm< mp<
-    nunmap <buffer> K
     nunmap <buffer> g"
     nunmap <buffer> g""
     xunmap <buffer> g"
@@ -257,10 +256,25 @@ endfu
 
 " 'public' function {{{2
 
+" From where do we call `tmux#man()`?{{{
+"
+" `doc#mapping#main()`.
+"}}}
+" Why don't you simply install a local `K` mapping calling `tmux#man()`?{{{
+"
+" We would  not be able to  press `K` on constructs  like codespans, codeblocks,
+" `:h cmd`, `man cmd`, `info cmd`, `CSI ...` inside a tmux file.
+"
+" IOW, we want to integrate `tmux#man()` into `doc#mapping#main()`.
+" To  do so,  the latter  must first  be  invoked to  try and  detect whether  a
+" familiar construct exists around the cursor position.
+" *Then*, if nothing is found, we can fall back on `tmux#man()`.
+" The only way to achieve this is to invoke `tmux#man()` from `doc#mapping#main()`.
+"}}}
 fu tmux#man(...) abort
     let keyword = expand('<cWORD>')
 
-    let highlight_group = synIDattr(synID(line('.'), col('.'), 1), 'name')
+    let highlight_group = synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
     if s:just_open_manpage(highlight_group)
         Man tmux
     elseif has_key(s:highlight_group_to_match_mapping, highlight_group)

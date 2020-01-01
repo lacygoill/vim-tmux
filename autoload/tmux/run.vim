@@ -55,7 +55,7 @@ endfu
 " Core {{{1
 fu s:get_cmd() abort "{{{2
     if &ft isnot# 'markdown'
-        let cml = matchstr(get(split(&l:cms, '%s'), 0, ''), '\S\+')
+        let cml = matchstr(&l:cms, '\S*\ze\s*%s')
     else
         let cml = ''
     endif
