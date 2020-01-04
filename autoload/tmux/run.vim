@@ -1,6 +1,6 @@
 " Interface {{{1
 fu tmux#run#command(...) abort "{{{2
-    let repeat = ! a:0
+    let repeat = !a:0
     if !exists('$TMUX') | echo 'requires Tmux' | return | endif
     if !repeat
         let cmd = s:get_cmd()
@@ -27,7 +27,7 @@ fu tmux#run#command(...) abort "{{{2
     " Open another tmux pane? Maybe...
     " Then we need to handle another case:
     "
-    "     if exists('s:pane_id') && ! s:previous_pane_runs_shell()
+    "     if exists('s:pane_id') && !s:previous_pane_runs_shell()
     "         call s:open_pane_and_save_id()
     "     endif
     "
