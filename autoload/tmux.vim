@@ -167,7 +167,7 @@ endfu
 
 fu s:man_tmux_search(section, regex) abort
     try
-        call search('^'.a:section)
+        call search('^'..a:section)
         call search(a:regex)
         return 1
     catch
@@ -183,7 +183,7 @@ fu s:keyword_based_jump(highlight_group, keyword) abort
 
     Man tmux
 
-    if s:man_tmux_search(section, '^\s\+\zs'.search_keyword)
+    if s:man_tmux_search(section, '^\s\+\zs'..search_keyword)
     \ || s:man_tmux_search(section, search_keyword)
     \ || s:man_tmux_search('', a:keyword)
         norm! zt
@@ -240,7 +240,7 @@ endfu
 " just open manpage {{{2
 
 fu s:just_open_manpage(highlight_group) abort
-    let char_under_cursor = matchstr(getline('.'), '\%'.col('.').'c.')
+    let char_under_cursor = matchstr(getline('.'), '\%'..col('.')..'c.')
     let syn_groups =<< trim END
 
         tmuxStringDelimiter
@@ -289,13 +289,16 @@ endfu
 fu s:opfunc(type) abort
     let sel_save = &selection
     let cb_save = &clipboard
+    " TODO: Not saving the register type seems wrong.
+    " We should invoke `setreg()` and restore the type.
+    " But which register name is equivalent to `@@`? `v:register`?
     let reg_save = @@
     try
         set selection=inclusive clipboard-=unnamed clipboard-=unnamedplus
         if a:type =~ '^\d\+$'
-             sil exe 'norm! ^v'.a:type.'$hy'
+             sil exe 'norm! ^v'..a:type..'$hy'
         elseif a:type =~# '^.$'
-             sil exe "norm! `<" . a:type . "`>y"
+             sil exe "norm! `<"..a:type.."`>y"
         elseif a:type is# 'line'
              norm! '[V']y
         elseif a:type is# 'block'
@@ -337,9 +340,9 @@ fu tmux#filterop(type) abort
                 continue
             endif
 
-            let command = 'tmux '.line
+            let command = 'tmux '..line
             if all_output =~# '\S'
-                let all_output ..= "\n".command
+                let all_output ..= "\n"..command
             else  " empty var, do not include newline first
                 let all_output = command
             endif
@@ -350,7 +353,7 @@ fu tmux#filterop(type) abort
                 call system('')
                 throw output
             elseif output =~# '\S'
-                let all_output ..= "\n> ".output[0:-2]
+                let all_output ..= "\n> "..output[0:-2]
             endif
 
             let index += 1
