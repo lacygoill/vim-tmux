@@ -203,12 +203,17 @@ fu s:format_shell_buffer() abort "{{{2
     " open folds automatically
     sil! FoldAutoOpen 1
 
+    " remove empty first line, and empty last prompt
+    sil! /^\%1l$/d_
+    sil! exe '/^\%'..line('$')..'l٪$/d_'
+
     " Why the priority 0?{{{
     "
     " To allow  a search to highlight  text even if it's  already highlighted by
     " this match.
     "}}}
-    let pat_cwd = '.*\ze\n٪' | hi Cwd ctermfg=blue | call matchadd('Cwd', pat_cwd, 0)
+    hi Cwd ctermfg=blue | call matchadd('Cwd', '.*\ze\%(\n٪\|\%$\)', 0)
+    hi ExitCode ctermfg=red | call matchadd('ExitCode', '\[\d\+\]\ze\%(\n٪\|\%$\)', 0)
     let pat_cmd = '^٪.\+' | hi ShellCmd ctermfg=green | call matchadd('ShellCmd', pat_cmd, 0)
 
     if search(pat_cmd, 'n')
