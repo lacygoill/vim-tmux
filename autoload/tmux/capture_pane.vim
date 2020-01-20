@@ -23,21 +23,27 @@ fu tmux#capture_pane#main() abort "{{{2
     " it in the shell; see the one-shot autocmd at the end.
     "}}}
 
-    " do not syntax highlight as a conf file, if one of the first lines begins with `#`
-    syn off
-    " Unfold everything, otherwise the next `delete` command may delete too many lines.{{{
-    "
-    " To see the issue, without `norm! zR`, press `pfx /` after `$ cat ~/.zshrc`,
-    " then press `u` in Nvim.
-    "}}}
-    norm! zR
-    TW
+    " we don't want the modified flag in the status line (nor folding to interfere in the next editions)
+    setl bt=nofile nofen
+
+    sil! TW
     exe '$' | call search('^\S', 'bW')
     sil keepj keepp .,$g/^\s*$/d_
 
-    " We need the buffer to be saved into a file, for `:lvim /pat/ %` to work.
-    let tempfile = tempname()
-    sil exe 'sav '..tempfile
+    " TODO: should we disable folding, just in case?
+    " TODO: highlight cwd above shell command with HG `Directory`
+
+    " Warning: be careful of a pitfall if you save the file in `/tmp` {{{
+    "
+    " The buffer will probably  be wrongly highlighted as a conf  file if one of
+    " its first lines start with a `#`.
+    " Right now, we don't have this issue, because when we invoke this function,
+    " Vim is passed a pseudo file in `/proc`; and we've configured Vim to ignore
+    " the filetype detection of such files:
+    "
+    "     let g:ft_ignore_pat = '\.\%(Z\|gz\|bz2\|zip\|tgz\|log\)$\|^/proc/'
+    "                                                               ^^^^^^^
+    "}}}
 
     let pat_cmd = '\m\C/MSG\s\+.\{-}XDCC\s\+SEND\s\+\d\+'
     " Format the buffer if it contains commands to downloads files via xdcc.{{{
@@ -139,6 +145,8 @@ fu tmux#capture_pane#main() abort "{{{2
         \ |     sil call system('xsel -ib', @+)
         \ | endif
     augroup END
+
+    setl fen
 endfu
 "}}}1
 " Core {{{1
@@ -167,8 +175,6 @@ fu s:format_xdcc_buffer(pat_cmd) abort "{{{2
     " see `:h easy-align-6-7`.
     "}}}
 
-    sil update
-
     " highlight filenames
     let pat_file = '\d\+x\s*|\s*[0-9.KMG]*\s*|\s*\zs\S*'
     call matchadd('Underlined', pat_file)
@@ -190,17 +196,23 @@ fu s:format_xdcc_buffer(pat_cmd) abort "{{{2
 endfu
 
 fu s:format_shell_buffer() abort "{{{2
-    " we want to be able to repeat `]l` right from the start
+    " make `]l` repeatable immediately
     do <nomodeline> CursorHold
-    let pat = '^٪.\+'
+    " fold the buffer
+    sil! call fold#adhoc#main()
+    " open folds automatically
+    sil! FoldAutoOpen 1
+
     " Why the priority 0?{{{
     "
     " To allow  a search to highlight  text even if it's  already highlighted by
     " this match.
     "}}}
-    call matchadd('Title', pat, 0)
-    if search(pat, 'n')
-        sil exe 'lvim /'..pat..'/j %'
+    let pat_cwd = '.*\ze\n٪' | hi Cwd ctermfg=blue | call matchadd('Cwd', pat_cwd, 0)
+    let pat_cmd = '^٪.\+' | hi ShellCmd ctermfg=green | call matchadd('ShellCmd', pat_cmd, 0)
+
+    if search(pat_cmd, 'n')
+        sil exe 'lvim /'..pat_cmd..'/j %'
     endif
 
     let items = getloclist(0)
