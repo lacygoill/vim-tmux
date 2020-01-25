@@ -315,7 +315,9 @@ endfu
 
 fu s:mq() abort "{{{2
     let cwd = s:getcwd()
-    cgetexpr map(getline(line("'<"), line("'>")), {_,v -> cwd..v})
+    let [lnum1, lnum2] = [line("'<"), line("'>")]
+    let lines = map(getline(lnum1, lnum2), {_,v -> cwd..v})
+    call setqflist([], ' ', {'lines': lines, 'title': ':'..lnum1..','..lnum2..'cgetbuffer'})
     cw
 endfu
 "}}}1
@@ -326,11 +328,12 @@ endfu
 let s:snr = get(s:, 'snr', s:snr())
 
 fu s:getcwd() abort "{{{2
-    let cwd = getline(search('^٪', 'bnW')-1)..'/'
+    let cwd = getline(search('^٪', 'bnW')-1)
+    let cwd = substitute(cwd, '\s*\[\d\+\]\s*$', '', '')
     " Warning: in the future, we may define other named directories in our zshrc.
     " Warning: `1000` may be the wrong UID.  We should inspect `$UID` but it's not in the environment.
     let cwd = substitute(cwd, '^\~tmp', '/run/user/1000/tmp', '')
     let cwd = substitute(cwd, '^\~xdcc', $HOME..'/Dowloads/XDCC', '')
-    return cwd
+    return cwd..'/'
 endfu
 
