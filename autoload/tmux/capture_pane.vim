@@ -196,6 +196,34 @@ fu s:format_xdcc_buffer(pat_cmd) abort "{{{2
 endfu
 
 fu s:format_shell_buffer() abort "{{{2
+    " `ZF` and `mq` don't work on relative paths.{{{
+    "
+    " I don't know how  to pass the cwd from Tmux to Vim;  even I knew, it would
+    " not  fix the  issue,  because  the captured  pane  could contain  commands
+    " executed in different directories.
+    "
+    " Solution1:
+    "
+    "     # in ~/.zshrc
+    "     rg() {
+    "       emulate -L zsh
+    "       command rg -LS --vimgrep --color=auto $* $(pwd)
+    "       #                                        ^^^^^^
+    "       #                        To get absolute paths.
+    "       # See: https://github.com/BurntSushi/ripgrep/issues/958#issuecomment-404471289
+    "     }
+    "
+    " Solution2: Install `ZF`/`mq` local  mappings, which are able  to parse the
+    " cwd from the previous shell prompt.
+    "
+    " I prefer the  second solution, because I don't always  want absolute paths
+    " in the shell, and because smarter  a smarter `ZF` mapping is actually more
+    " powerful/useful  because it  can help  with  any shell  command, not  just
+    " `rg(1)`.  E.g., you can press `ZF` on a file output by `$ ls`.
+    "}}}
+    let &l:inex = s:snr..'inex()'
+    xno <buffer><nowait><silent> mq :<c-u>call <sid>mq()<cr>
+
     " make `]l` repeatable immediately
     do <nomodeline> CursorHold
     " fold the buffer
@@ -262,5 +290,47 @@ fu s:copy_cmd_to_get_file_via_xdcc() abort "{{{2
     let cmd = '/moviegods_send_me_file '..msg
     let @+ = cmd
     q!
+endfu
+
+fu s:inex() abort "{{{2
+    let cwd = s:getcwd()
+    " most of the code is leveraged from a similar function in our vimrc
+    let line = getline('.')
+    let pat = '\m\C${\f\+}'..'\V'..v:fname..'\m\|${\V'..v:fname..'}\f\+\|\%'..col('.')..'c${\f\+}\f\+'
+    let cursor_after = '\m\%(.*\%'..col('.')..'c\)\@='
+    let cursor_before = '\m\%(\%'..col('.')..'c.*\)\@<='
+    let pat = cursor_after..pat..cursor_before
+    if line =~# pat
+        let pat = matchstr(line, pat)
+        let env = matchstr(pat, '\w\+')
+        return substitute(pat, '${'..env..'}', eval('$'..env), '')
+    elseif line =~# '='
+        return substitute(v:fname, '.*=', '', '')
+    elseif line =~# '^\./'
+        return substitute(v:fname, '^\./', cwd, '')
+    else
+        return cwd..v:fname
+    endif
+endfu
+
+fu s:mq() abort "{{{2
+    let cwd = s:getcwd()
+    cgetexpr map(getline(line("'<"), line("'>")), {_,v -> cwd..v})
+    cw
+endfu
+"}}}1
+" Utilities {{{1
+fu s:snr() abort "{{{2
+    return matchstr(expand('<sfile>'), '.*\zs<SNR>\d\+_')
+endfu
+let s:snr = get(s:, 'snr', s:snr())
+
+fu s:getcwd() abort "{{{2
+    let cwd = getline(search('^٪', 'bnW')-1)..'/'
+    " Warning: in the future, we may define other named directories in our zshrc.
+    " Warning: `1000` may be the wrong UID.  We should inspect `$UID` but it's not in the environment.
+    let cwd = substitute(cwd, '^\~tmp', '/run/user/1000/tmp', '')
+    let cwd = substitute(cwd, '^\~xdcc', $HOME..'/Dowloads/XDCC', '')
+    return cwd
 endfu
 
