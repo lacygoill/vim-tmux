@@ -140,10 +140,9 @@ let s:keyword_mappings = {
 \ 'unlinkw':             'unlink-window'
 \ }
 
-" Syntax highlighting group names are arranged by tmux manpage
-" sections. That makes it easy to find a section in the manpage where the
-" keyword is described.
-" This dictionary provides a mapping between a syntax highlighting group and
+" Syntax highlight group names are arranged by tmux manpage sections. That makes
+" it easy to find a section in the manpage where the keyword is described.
+" This  dictionary provides  a  mapping  between a  syntax  highlight group  and
 " related manpage section.
 let s:highlight_group_manpage_section = {
 \ 'tmuxClientSessionCmds': 'CLIENTS AND SESSIONS',
