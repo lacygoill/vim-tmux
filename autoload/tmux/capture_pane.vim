@@ -198,8 +198,8 @@ endfu
 fu s:format_shell_buffer() abort "{{{2
     " `ZF` and `mq` don't work on relative paths.{{{
     "
-    " I don't know how  to pass the cwd from Tmux to Vim;  even I knew, it would
-    " not  fix the  issue,  because  the captured  pane  could contain  commands
+    " I don't  know how to  pass the cwd  from Tmux to Vim;  even if I  knew, it
+    " would not fix the issue, because  the captured pane could contain commands
     " executed in different directories.
     "
     " Solution1:
@@ -304,7 +304,7 @@ fu s:inex() abort "{{{2
         let pat = matchstr(line, pat)
         let env = matchstr(pat, '\w\+')
         return substitute(pat, '${'..env..'}', eval('$'..env), '')
-    elseif line =~# '='
+    elseif line =~# cursor_after..'='..cursor_before
         return substitute(v:fname, '.*=', '', '')
     elseif line =~# '^\./'
         return substitute(v:fname, '^\./', cwd, '')
