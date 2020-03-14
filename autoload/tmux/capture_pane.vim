@@ -196,40 +196,7 @@ fu s:format_xdcc_buffer(pat_cmd) abort "{{{2
 endfu
 
 fu s:format_shell_buffer() abort "{{{2
-    " `ZF` and `mq` don't work on relative paths.{{{
-    "
-    " I don't  know how to  pass the cwd  from Tmux to Vim;  even if I  knew, it
-    " would not fix the issue, because  the captured pane could contain commands
-    " executed in different directories.
-    "
-    " Solution1:
-    "
-    "     # in ~/.zshrc
-    "     rg() {
-    "       emulate -L zsh
-    "       command rg -LS --vimgrep --color=auto $* $(pwd)
-    "       #                                        ^^^^^^
-    "       #                        To get absolute paths.
-    "       # See: https://github.com/BurntSushi/ripgrep/issues/958#issuecomment-404471289
-    "     }
-    "
-    " Solution2: Install `ZF`/`mq` local  mappings, which are able  to parse the
-    " cwd from the previous shell prompt.
-    "
-    " I prefer the  second solution, because I don't always  want absolute paths
-    " in the shell, and because smarter  a smarter `ZF` mapping is actually more
-    " powerful/useful  because it  can help  with  any shell  command, not  just
-    " `rg(1)`.  E.g., you can press `ZF` on a file output by `$ ls`.
-    "}}}
-    let &l:inex = s:snr..'inex()'
-    xno <buffer><nowait><silent> mq :<c-u>call <sid>mq()<cr>
-
-    " make `]l` repeatable immediately
-    do <nomodeline> CursorHold
-    " fold the buffer
-    sil! call fold#adhoc#main()
-    " open folds automatically
-    sil! FoldAutoOpen 1
+    sil! call terminal#setup()
 
     " remove empty first line, and empty last prompt
     sil! /^\%1l$/d_
@@ -256,6 +223,8 @@ fu s:format_shell_buffer() abort "{{{2
     call qf#set_matches('after_tmux_capture_pane:format_shell_buffer', 'Conceal', 'location')
     call qf#create_matches()
     lclose
+    " make `]l` repeatable immediately
+    do <nomodeline> CursorHold
     norm! gg
 endfu
 
@@ -322,11 +291,6 @@ fu s:mq() abort "{{{2
 endfu
 "}}}1
 " Utilities {{{1
-fu s:snr() abort "{{{2
-    return matchstr(expand('<sfile>'), '.*\zs<SNR>\d\+_')
-endfu
-let s:snr = get(s:, 'snr', s:snr())
-
 fu s:getcwd() abort "{{{2
     let cwd = getline(search('^٪', 'bnW')-1)
     let cwd = substitute(cwd, '\s*\[\d\+\]\s*$', '', '')
