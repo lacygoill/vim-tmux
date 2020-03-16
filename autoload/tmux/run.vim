@@ -126,7 +126,7 @@ fu s:close_pane(when) abort "{{{2
             unlet! s:pane_id s:last_cmd
             au! tmux_run_cmd_close_pane
         catch
-            return lg#catch_error()
+            return lg#catch()
         endtry
     endif
 endfu
