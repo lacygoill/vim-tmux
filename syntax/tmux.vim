@@ -123,7 +123,7 @@ syn keyword tmuxModeCmds other-end page-down page-up paste previous-space previo
 syn keyword tmuxModeCmds rectangle-toggle scroll-down scroll-up search-again
 syn keyword tmuxModeCmds search-backward search-forward search-reverse select-line select-word
 syn keyword tmuxModeCmds start-named-buffer start-number-prefix start-of-line
-syn keyword tmuxModeCmds start-of-list switch-mode switch-mode-append
+syn keyword tmuxModeCmds start-of-list stop-selection switch-mode switch-mode-append
 syn keyword tmuxModeCmds switch-mode-append-line switch-mode-begin-line
 syn keyword tmuxModeCmds switch-mode-change-line switch-mode-substitute
 syn keyword tmuxModeCmds switch-mode-substitute-line top-line transpose-chars
