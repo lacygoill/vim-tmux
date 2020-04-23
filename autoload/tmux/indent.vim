@@ -12,7 +12,7 @@ endfu
 
 fu s:prev_line_ends_with_open_string(lnum) abort
     if a:lnum > 1
-        let prev_line_len = len(getline(a:lnum - 1))
+        let prev_line_len = strlen(getline(a:lnum - 1))
         if s:highlight_group(a:lnum - 1, prev_line_len) is# 'tmuxString'
             return 1
         endif
