@@ -104,7 +104,7 @@ endfu
 
 fu s:close_pane(when) abort "{{{2
     if a:when is# 'later'
-        augroup tmux_run_cmd_close_pane
+        augroup tmux_run_cmd_close_pane | au!
             " Is it ok to remove *all* autocmds?{{{
             "
             " For the moment, yes.
@@ -116,7 +116,6 @@ fu s:close_pane(when) abort "{{{2
             " If you  want to check whether  the autocmds are duplicated,  run a
             " command, close its pane, then re-run the command.
             "}}}
-            au!
             au VimLeave * call s:close_pane('now')
             au BufWinLeave <buffer> call s:close_pane('now')
         augroup END
