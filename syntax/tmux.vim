@@ -117,12 +117,12 @@ syn keyword tmuxModeCmds delete delete-end-of-line delete-line delete-word down
 syn keyword tmuxModeCmds end-of-line end-of-list enter goto-line halfpage-down
 syn keyword tmuxModeCmds halfpage-up history-bottom history-down history-top
 syn keyword tmuxModeCmds history-up jump-again jump-backward jump-forward
-syn keyword tmuxModeCmds jump-reverse jump-to-backward jump-to-forward middle-line
+syn keyword tmuxModeCmds jump-reverse jump-to-backward jump-to-forward jump-to-mark middle-line
 syn keyword tmuxModeCmds next-matching-bracket next-space next-space-end next-word next-word-end
 syn keyword tmuxModeCmds other-end page-down page-up paste previous-space previous-word
 syn keyword tmuxModeCmds rectangle-toggle scroll-down scroll-up search-again
 syn keyword tmuxModeCmds search-backward search-forward search-reverse select-line select-word
-syn keyword tmuxModeCmds start-named-buffer start-number-prefix start-of-line
+syn keyword tmuxModeCmds set-mark start-named-buffer start-number-prefix start-of-line
 syn keyword tmuxModeCmds start-of-list stop-selection switch-mode switch-mode-append
 syn keyword tmuxModeCmds switch-mode-append-line switch-mode-begin-line
 syn keyword tmuxModeCmds switch-mode-change-line switch-mode-substitute

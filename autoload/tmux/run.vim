@@ -61,7 +61,9 @@ fu s:get_cmd() abort "{{{2
     endif
     " Note that we don't exclude the whitespace which follows the `$` shell prompt.
     " This will make sure that when the command is run, zsh doesn't log it in its history.
-    let cmd = matchstr(getline('.'), '^\s*\V'..escape(cml, '\')..'\m\s*\$\zs\s.*')
+    let cmd = matchstr(getline('.'), '^\s*\V'..escape(cml, '\')..'\m\s*[$%]\zs\s.*')
+    "                                                                    ^
+    "                                                                    zsh shell prompt
     " support continuation lines
     if cmd =~# '\\\s*$'
         let end = search('\%(\\\s*\)\@<!$', 'nW')
