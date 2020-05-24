@@ -109,7 +109,7 @@ fu tmux#capture_pane#main() abort "{{{2
         "
         "     systemd(1)---lightdm(1008)---lightdm(1088)---upstart(1097)---xclip(12973)
         "
-        " There's no  Vim or Tmux  process in the parents  of `xclip(1)`, so  the latter
+        " There's no  Vim or tmux  process in the parents  of `xclip(1)`, so  the latter
         " shouldn't care about what happens to the Vim process...
         "
         " See also: https://unix.stackexchange.com/q/523255/289772

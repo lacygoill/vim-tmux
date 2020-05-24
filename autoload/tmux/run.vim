@@ -1,7 +1,7 @@
 " Interface {{{1
 fu tmux#run#command(...) abort "{{{2
     let repeat = !a:0
-    if !exists('$TMUX') | echo 'requires Tmux' | return | endif
+    if !exists('$TMUX') | echo 'requires tmux' | return | endif
     if !repeat
         let cmd = s:get_cmd()
         if empty(cmd) | return | endif
