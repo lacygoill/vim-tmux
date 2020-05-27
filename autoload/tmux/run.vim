@@ -1,6 +1,12 @@
 " Interface {{{1
 fu tmux#run#command(...) abort "{{{2
-    let repeat = !a:0
+    if !a:0
+        let &opfunc = 'tmux#run#command'
+        return 'g@l'
+    endif
+    " if we passed a number as an  argument, it means we've pressed `||`, and we
+    " just want to repeat the last command
+    let repeat = type(a:1) == v:t_number
     if !exists('$TMUX') | echo 'requires tmux' | return | endif
     if !repeat
         let cmd = s:get_cmd()

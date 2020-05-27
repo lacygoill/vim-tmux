@@ -314,12 +314,17 @@ fu s:opfunc(type) abort
     endtry
 endfu
 
-fu tmux#filterop(type) abort
+fu tmux#filterop(...) abort
+    if !a:0
+        let &opfunc = 'tmux#filterop'
+        return 'g@'
+    endif
     let reg_save = @@
     try
-        let expr = s:opfunc(a:type)
+        let type = a:1
+        let expr = s:opfunc(type)
         let lines = split(expr, "\n")
-        let all_output = ""
+        let all_output = ''
         let index = 0
         while index < len(lines)
             let line = lines[index]
