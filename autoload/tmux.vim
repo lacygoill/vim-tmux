@@ -290,7 +290,7 @@ fu s:opfunc(type) abort
     let cb_save = &clipboard
     " TODO: Not saving the register type seems wrong.
     " We should invoke `setreg()` and restore the type.
-    " But which register name is equivalent to `@@`? `v:register`?
+    " But which register name is equivalent to `@@`?  `v:register`?
     let reg_save = @@
     try
         set selection=inclusive clipboard-=unnamed clipboard-=unnamedplus

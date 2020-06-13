@@ -6,7 +6,7 @@ fu tmux#capture_pane#main() abort "{{{2
     "
     " It makes tmux copy the contents of the pane, from the start of the history
     " down to the end of the visible pane, in a tmux buffer.
-    " Then, it makes Nvim read this tmux buffer.
+    " Then, it makes Vim read this tmux buffer.
     "
     " If you create a new tmux window and run `$ ls ~`, the tmux buffer contains
     " a lot of empty lines at the bottom; we don't want them.
@@ -15,12 +15,12 @@ fu tmux#capture_pane#main() abort "{{{2
     " need to pass `-J` to `capture-pane`; we don't want them either.
     "
     " This function  tries to remove  all trailing whitespace, and  all trailing
-    " empty lines at the end of the Nvim buffer.
+    " empty lines at the end of the Vim buffer.
     "
     " ---
     "
-    " Also, it tries to  ease the process of copying text  in Nvim, then pasting
-    " it in the shell; see the one-shot autocmd at the end.
+    " Also, it tries to ease the process of copying text in Vim, then pasting it
+    " in the shell; see the one-shot autocmd at the end.
     "}}}
 
     " we don't want the modified flag in the status line (nor folding to interfere in the next editions)
@@ -86,7 +86,7 @@ fu tmux#capture_pane#main() abort "{{{2
         "}}}
         " Do *not* use `xclip(1)` instead of `xsel(1x)`!{{{
         "
-        " It would work with Nvim, but not with Vim.
+        " It would not work.
         "
         " MWE:
         "
@@ -116,12 +116,8 @@ fu tmux#capture_pane#main() abort "{{{2
         "
         " ---
         "
-        " I think the reason why it works in Nvim is given at `:h vim-differences`:
-        "
-        " >     |system()|, |systemlist()| can run {cmd} directly (without 'shell')
-        "
-        " If you wanted to use `xclip(1)` from Vim, you would need to start it without a shell.
-        " First, you could write the text in a file:
+        " If you wanted to  use `xclip(1)` from Vim, you would  need to start it
+        " without a shell.  First, you could write the text in a file:
         "
         "     :let tempfile = tempname()
         "     :call writefile(split(@", '\n'), tempfile, 'b')
