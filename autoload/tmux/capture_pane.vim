@@ -191,7 +191,13 @@ fu s:format_xdcc_buffer(pat_cmd) abort "{{{2
 endfu
 
 fu s:format_shell_buffer() abort "{{{2
-    sil! call terminal#setup()
+    noremap <buffer><expr><nowait><silent> [c brackets#move#regex('shell_prompt', 0)
+    noremap <buffer><expr><nowait><silent> ]c brackets#move#regex('shell_prompt', 1)
+    sil! call repmap#make#repeatable({
+        \ 'mode': '',
+        \ 'buffer': 1,
+        \ 'from': expand('<sfile>:p')..':'..expand('<slnum>'),
+        \ 'motions': [{'bwd': '[c',  'fwd': ']c'}]})
 
     " remove empty first line, and empty last prompt
     sil! /^\%1l$/d_
