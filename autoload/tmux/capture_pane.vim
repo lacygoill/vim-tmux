@@ -42,7 +42,7 @@ fu tmux#capture_pane#main() abort "{{{2
     " the filetype detection of such files:
     "
     "     let g:ft_ignore_pat = '\.\%(Z\|gz\|bz2\|zip\|tgz\|log\)$\|^/proc/'
-    "                                                               ^^^^^^^
+    "                                                               ^-----^
     "}}}
 
     let pat_cmd = '\m\C/MSG\s\+.\{-}XDCC\s\+SEND\s\+\d\+'

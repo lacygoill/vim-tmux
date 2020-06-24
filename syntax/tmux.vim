@@ -106,7 +106,7 @@ syn keyword tmuxOptsSetw pane-base-index other-pane-height other-pane-width
 syn keyword tmuxOptsSetw allow-rename c0-change-interval c0-change-trigger
 syn keyword tmuxOptsSetw layout-history-limit monitor-silence utf8 wrap-search
 syn keyword tmuxOptsSetw window-active-style window-style
-syn keyword tmuxOptsSetw pane-active-border-style pane-border-style
+syn keyword tmuxOptsSetw pane-border-lines pane-active-border-style pane-border-style
 
 " keywords for vi/emacs edit, choice and copy modes
 syn keyword tmuxModeCmds append-selection back-to-indentation backspace
@@ -233,7 +233,7 @@ syn match tmuxColor /#\x\{6}/        display
 " Because of the `search-reverse` command.
 "
 "     send -X search-reverse
-"                    ^^^^^^^
+"                    ^-----^
 "                    we don't want that to be highlighted by `tmuxStyle`
 "}}}
 syn match tmuxStyle /\(no\)\?\(bright\|bold\|dim\|underscore\|blink\|-\@1<!reverse\|hidden\|italics\)/ display

@@ -288,29 +288,21 @@ endfu
 fu s:opfunc(type) abort
     let sel_save = &selection
     let cb_save = &clipboard
-    " TODO: Not saving the register type seems wrong.
-    " We should invoke `setreg()` and restore the type.
-    " But which register name is equivalent to `@@`?  `v:register`?
-    let reg_save = @@
+    let reg_save = getreginfo('"')
     try
-        set selection=inclusive clipboard-=unnamed clipboard-=unnamedplus
-        if a:type =~ '^\d\+$'
-             sil exe 'norm! ^v'..a:type..'$hy'
-        elseif a:type =~# '^.$'
-             sil exe "norm! `<"..a:type.."`>y"
+        set cb-=unnamed cb-=unnamedplus sel=inclusive
+        if a:type is# 'char'
+             norm! `[v`]y
         elseif a:type is# 'line'
              norm! '[V']y
         elseif a:type is# 'block'
-             sil exe "norm! `[\<c-V>`]y"
-        else
-             norm! `[v`]y
+             sil exe "norm! `[\<c-v>`]y"
         endif
         redraw
-        return @@
+        return getreg('"', 1, 1)
     finally
-        let @@ = reg_save
-        let &selection = sel_save
-        let &clipboard = cb_save
+        let [&cb, &sel] = [cb_save, sel_save]
+        call setreg('"', reg_save)
     endtry
 endfu
 
@@ -319,60 +311,50 @@ fu tmux#filterop(...) abort
         let &opfunc = 'tmux#filterop'
         return 'g@'
     endif
-    let reg_save = @@
-    try
-        let type = a:1
-        let expr = s:opfunc(type)
-        let lines = split(expr, "\n")
-        let all_output = ''
-        let index = 0
-        while index < len(lines)
-            let line = lines[index]
+    let type = a:1
+    let lines = s:opfunc(type)
+    let all_output = ''
+    let index = 0
+    while index < len(lines)
+        let line = lines[index]
 
-            " if line is a part of multi-line string (those have '\' at the end)
-            " and not last line, perform " concatenation
-            while line =~# '\\\s*$' && index != len(lines)-1
-                let index += 1
-                " remove '\' from line end
-                let line = substitute(line, '\\\s*$', '', '')
-                " append next line
-                let line ..= lines[index]
-            endwhile
-
-            " skip empty line and comments
-            if line =~# '^\s*\%(#\|$\)'
-                continue
-            endif
-
-            let command = 'tmux '..line
-            if all_output =~# '\S'
-                let all_output ..= "\n"..command
-            else  " empty var, do not include newline first
-                let all_output = command
-            endif
-
-            sil let output = system(command)
-            if v:shell_error
-                " reset `v:shell_error`
-                call system('')
-                throw output
-            elseif output =~# '\S'
-                let all_output ..= "\n> "..output[0:-2]
-            endif
-
+        " if line is a part of multi-line string (those have '\' at the end)
+        " and not last line, perform " concatenation
+        while line =~# '\\\s*$' && index != len(lines)-1
             let index += 1
+            " remove '\' from line end
+            let line = substitute(line, '\\\s*$', '', '')
+            " append next line
+            let line ..= lines[index]
         endwhile
 
-        if all_output =~# '\S'
-            redraw
-            echo all_output
+        " skip empty line and comments
+        if line =~# '^\s*\%(#\|$\)'
+            continue
         endif
-    catch /^.*/
+
+        let command = 'tmux '..line
+        if all_output =~# '\S'
+            let all_output ..= "\n"..command
+        else  " empty var, do not include newline first
+            let all_output = command
+        endif
+
+        sil let output = system(command)
+        if v:shell_error
+            " reset `v:shell_error`
+            call system('')
+            throw output
+        elseif output =~# '\S'
+            let all_output ..= "\n> "..output[0:-2]
+        endif
+
+        let index += 1
+    endwhile
+
+    if all_output =~# '\S'
         redraw
         echo all_output
-        return lg#catch()
-    finally
-        let @@ = reg_save
-    endtry
+    endif
 endfu
 
