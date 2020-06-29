@@ -290,7 +290,7 @@ fu s:opfunc(type) abort
     let cb_save = &clipboard
     let reg_save = getreginfo('"')
     try
-        set cb-=unnamed cb-=unnamedplus sel=inclusive
+        set cb= sel=inclusive
         if a:type is# 'char'
              norm! `[v`]y
         elseif a:type is# 'line'

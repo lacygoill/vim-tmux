@@ -187,7 +187,7 @@ fu s:format_xdcc_buffer(pat_cmd) abort "{{{2
     nmap <buffer><nowait><silent> ZZ <cr>
 
     " let us jump from one filename to another by pressing `n` or `N`
-    let @/ = pat_file
+    call setreg('/', [pat_file], 'c')
 endfu
 
 fu s:format_shell_buffer() abort "{{{2
@@ -258,7 +258,7 @@ fu s:copy_cmd_to_get_file_via_xdcc() abort "{{{2
     "     cmd1 ; cmd2
     "}}}
     let cmd = '/moviegods_send_me_file '..msg
-    let @+ = cmd
+    call setreg('+', [cmd], 'c')
     q!
 endfu
 "}}}1
