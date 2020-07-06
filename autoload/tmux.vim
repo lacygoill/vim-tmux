@@ -283,36 +283,18 @@ fu tmux#man(...) abort
     endif
 endfu
 " }}}1
-" g! {{{1
+" g" {{{1
 
-fu s:opfunc(type) abort
-    let sel_save = &selection
-    let cb_save = &clipboard
-    let reg_save = getreginfo('"')
-    try
-        set cb= sel=inclusive
-        if a:type is# 'char'
-             norm! `[v`]y
-        elseif a:type is# 'line'
-             norm! '[V']y
-        elseif a:type is# 'block'
-             sil exe "norm! `[\<c-v>`]y"
-        endif
-        redraw
-        return getreg('"', 1, 1)
-    finally
-        let [&cb, &sel] = [cb_save, sel_save]
-        call setreg('"', reg_save)
-    endtry
+fu tmux#filterop() abort
+    let &opfunc = 'lg#opfunc'
+    let g:opfunc_core = 'tmux#filterop_core'
+    return 'g@'
 endfu
 
-fu tmux#filterop(...) abort
-    if !a:0
-        let &opfunc = 'tmux#filterop'
-        return 'g@'
-    endif
-    let type = a:1
-    let lines = s:opfunc(type)
+fu tmux#filterop_core(type) abort
+    redraw
+    let lines = getreg('"', 1, 1)
+
     let all_output = ''
     let index = 0
     while index < len(lines)
