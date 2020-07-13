@@ -200,8 +200,8 @@ fu s:format_shell_buffer() abort "{{{2
         \ 'motions': [{'bwd': '[c',  'fwd': ']c'}]})
 
     " remove empty first line, and empty last prompt
-    sil! /^\%1l$/d_
-    sil! exe '/^\%'..line('$')..'l٪$/d_'
+    sil! keepj /^\%1l$/d_
+    sil! exe 'keepj /^\%'..line('$')..'l٪$/d_'
 
     " Why the priority 0?{{{
     "

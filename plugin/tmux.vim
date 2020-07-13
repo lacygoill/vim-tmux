@@ -14,11 +14,4 @@ let g:loaded_tmux = 1
 com -bar -nargs=1 TxPasteLastShellCmd call tmux#paste_last_shell_cmd(<args>)
 
 nno <expr><unique> <bar>x tmux#run#command()
-nno <unique><silent> <bar><bar> :<c-u>call tmux#run#command(0)<cr>
-"                                                           ^
-"                                   pass an ad-hoc expression{{{
-"
-" It  must be  different than  a string,  so that  the function  can distinguish
-" between being invoked as an opfunc or from this mapping.
-"}}}
-
+nno <unique><silent> <bar><bar> :<c-u>call tmux#run#command('repeat')<cr>
