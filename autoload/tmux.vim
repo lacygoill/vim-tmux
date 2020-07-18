@@ -287,7 +287,9 @@ endfu
 
 fu tmux#filterop() abort
     let &opfunc = 'lg#opfunc'
-    let g:opfunc_core = 'tmux#filterop_core'
+    let g:opfunc = {
+        \ 'core': 'tmux#filterop_core',
+        \ }
     return 'g@'
 endfu
 
