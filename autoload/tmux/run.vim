@@ -5,7 +5,7 @@ let g:autoloaded_tmux#run = 1
 
 " Init {{{1
 
-const s:SIGIL = '[$%]'
+const s:PROMPT = '[$%]\s'
 
 " Interface {{{1
 fu tmux#run#command(...) abort "{{{2
@@ -79,7 +79,7 @@ fu s:get_cmd() abort "{{{2
 
     " the command could be split on multiple lines
     let curpos = getcurpos()
-    if cmd != '' || search('^\s*' .. cml .. cbi .. s:SIGIL, 'bW')
+    if cmd != '' || search('^\s*' .. cml .. cbi .. s:PROMPT, 'bW')
         let cmd = s:get_multiline_codeblock(cml, cbi, curpos[1])
         call setpos('.', curpos)
     endif
@@ -109,17 +109,19 @@ fu s:get_cml() abort "{{{2
 endfu
 
 fu s:get_codeblock_indent(cml) abort "{{{2
-    return '\s\{'..(&ft is# 'markdown' || a:cml is# '' ? 4 : 5)..'}'
+    return '\s\{'..(&ft is# 'markdown' || a:cml == '' ? 4 : 5)..'}'
 endfu
 
 fu s:get_cmd_start(cml, cbi) abort "{{{2
-    " Note that we don't exclude the whitespace which follows the sigil.
+    " Note that we don't exclude the whitespace which follows the `$` or `%` prompt.
     " This will make sure that when the command is run, zsh doesn't log it in its history.
-    return getline('.')->matchstr('^\s*' .. a:cml .. a:cbi .. s:SIGIL .. '\zs\s.*')
+    return getline('.')->matchstr('^\s*' .. a:cml .. a:cbi .. s:PROMPT .. '\zs.*')
 endfu
 
 fu s:get_multiline_codeblock(cml, cbi, curlnum) abort "{{{2
     let cmd = s:get_cmd_start(a:cml, a:cbi)
+    " sanity check
+    if cmd == '' | return '' | endif
     let end = s:get_end_lnum(cmd, a:cml)
 
     " make sure  the code block  which is found  is relevant (i.e.  the original
@@ -201,7 +203,7 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
     let curpos = getcurpos()
     " To find the starting line of the block, we first look for the nearest line
     " *outside* the block.  Then, we look for the nearest line *inside* the block.
-    if &ft is# 'markdown' || a:cml is# ''
+    if &ft is# 'markdown' || a:cml == ''
         " Why do you check for a non-whitespace at the end of the first branch?{{{
         "
         " So that we can find a code which contains empty commented lines.
@@ -235,7 +237,7 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
         let outside = '^\%(\s\{4}\)\@!.*\S\|\~$'
         " Why `[:"#]`?{{{
         "
-        " We  need to  ignore a  colon  because we  usually  use it  as a  sigil
+        " We  need to  ignore a  colon because  we usually  use it  as a  prompt
         " denoting an Ex command which must be executed interactively.
         "
         " We also need to ignore a commented line.
@@ -249,10 +251,10 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
         " code block is supposed to be.  This is necessary for the next `l:Skip`
         " expression to work as expected.
         "}}}
-        let inside = '^\s\{4,}\zs\%(' .. s:SIGIL .. '\|[:"#]\)\@!'
+        let inside = '^\s\{4,}\zs\%(' .. s:PROMPT .. '\|[:"#]\)\@!'
     else
         let outside = '^\s*' .. a:cml .. '\%(\s\{5}\)\@!.*\S\|^\s*$\|\~$'
-        let inside = '^\s*' .. a:cml .. '\s\{5,}\%(' .. s:SIGIL .. '\)\@!\zs\S'
+        let inside = '^\s*' .. a:cml .. '\s\{5,}\%(' .. s:PROMPT .. '\)\@!\zs\S'
     endif
     call search(outside .. '\|\%^', 'bW')
     " Why the `{skip}` lambda expression?{{{
@@ -275,15 +277,16 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
     let startline = getline(start)
     " There should not be the start of a heredoc on the first line.{{{
     "
-    " If we're here, it means that we didn't find a command starting with a sigil.
-    " If we allow the code to proceed,  we allow a Vim + heredoc command without
-    " sigil.  But only in a Vim file or in the Vim wiki; *not* in the other wikis.
+    " If we're  here, it  means that we  didn't find a  command starting  with a
+    " prompt.  If we allow the code to proceed, we allow a Vim + heredoc command
+    " without prompt.  But only  in a Vim file or in the Vim  wiki; *not* in the
+    " other wikis.
     "
-    " This  would  be  inconsistent.   We  should be  able  to  omit  the  sigil
+    " This  would  be inconsistent.   We  should  be  able  to omit  the  prompt
     " everywhere  or  nowhere.   Let's  choose  nowhere.  If  we  made  it  work
     " everywhere, it  would create another  inconsistency.  We would be  able to
-    " omit the sigil for all Vim commands using a heredoc, but not for the other
-    " commands (e.g. `cat(1)`).
+    " omit the  prompt for  all Vim commands  using a heredoc,  but not  for the
+    " other commands (e.g. `cat(1)`).
     "}}}
     if startline =~# '<<-\=\([''"]\=\)EOF\1'
         return ''
