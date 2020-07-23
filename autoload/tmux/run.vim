@@ -395,7 +395,20 @@ fu s:run_shell_cmd(cmd) abort "{{{2
         sil call system('tmux send -t '..s:pane_id..' G')
         let clear = 'tmux send -t '..s:pane_id..' C-\\ C-n :qa! Enter'
     else
-        let clear = 'tmux send -t '..s:pane_id..' C-e C-u'
+        " Why not `C-e C-u`?{{{
+        "
+        " The command-line could contain several lines of code (e.g. heredoc).
+        " In that case, `C-e C-u` would only clear the current line, not the other ones.
+        "}}}
+        "   Ok, and what does `C-x C-k` do?{{{
+        "
+        " It clears the whole command-line, no  matter how many lines of code it
+        " contains, or where the cursor is.
+        "
+        " It  works  only   because  we  bind  `C-x  C-k`  to   the  zle  widget
+        " `kill-buffer` in our zshrc.  See `man zshzle /kill-buffer`.
+        "}}}
+        let clear = 'tmux send -t '..s:pane_id..' C-x C-k'
     endif
     sil call system(clear)
 
