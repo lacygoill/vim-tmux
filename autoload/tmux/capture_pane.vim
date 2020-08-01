@@ -252,7 +252,7 @@ fu s:copy_cmd_to_get_file_via_xdcc() abort "{{{2
     " To fix  this issue, we  need to build a  command-line which would  run two
     " commands.
     "
-    " An alias allows you to use the `;` token which has the same meaning as in a shell.
+    " An alias lets you use the `;` token which has the same meaning as in a shell.
     " With it, you can do:
     "
     "     cmd1 ; cmd2

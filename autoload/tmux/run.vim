@@ -299,7 +299,7 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
 endfu
 
 fu s:get_vim_fenced_codeblock() abort "{{{2
-    let start = search('^```vim', 'bnW')
+    let start = search('^```vim', 'bcnW')
     if !start | return '' | endif
     let start += 1
 
