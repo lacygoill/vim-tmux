@@ -138,17 +138,17 @@ syn keyword tmuxKeySymbol NPage PageDown PgDn PPage PageUp PgUp
 syn keyword tmuxKeySymbol Up Down Left Right
 
 " these commands are special when at the beginning of the line
-syn match tmuxMiscCmds        /run\(-shell\)\?/ display
-syn match tmuxSpecialCmds /^\s*\zsrun\(-shell\)\?/ display
+syn match tmuxMiscCmds        /run\(-shell\)\=/ display
+syn match tmuxSpecialCmds /^\s*\zsrun\(-shell\)\=/ display
 
-syn match tmuxBindingCmds     /bind\(-key\)\?/ display
-syn match tmuxSpecialCmds /^\s*\zsbind\(-key\)\?/ display
+syn match tmuxBindingCmds     /bind\(-key\)\=/ display
+syn match tmuxSpecialCmds /^\s*\zsbind\(-key\)\=/ display
 
-syn match tmuxBindingCmds     /unbind\(-key\)\?/ display
-syn match tmuxSpecialCmds /^\s*\zsunbind\(-key\)\?/ display
+syn match tmuxBindingCmds     /unbind\(-key\)\=/ display
+syn match tmuxSpecialCmds /^\s*\zsunbind\(-key\)\=/ display
 
-syn match tmuxOptsSet         /set\(-option\)\?/ display
-syn match tmuxSpecialCmds /^\s*\zsset\(-option\)\?/ display
+syn match tmuxOptsSet         /set\(-option\)\=/ display
+syn match tmuxSpecialCmds /^\s*\zsset\(-option\)\=/ display
 
 syn match tmuxOptsSetw        /\(setw\|set-window-option\)/ display
 syn match tmuxSpecialCmds /^\s*\zs\(setw\|set-window-option\)/ display
@@ -214,8 +214,8 @@ syn keyword tmuxTodo FIXME NOTE TODO XXX todo contained
 
 syn match tmuxKey               /\(C-\|M-\|\^\)\+\S\+/  display
 syn match tmuxKey               /\%(^\s*\%(un\)\=bind\%(-key\)\=\s\+\%(\%(-T\s\+\%(copy-mode-vi\|copy-mode\|root\)\|-r\)\s\+\)\=\)\@<=\S\+/ display
-syn match tmuxNumber            /\<[+-]\?\d\+/          display
-syn match tmuxSelWindowOption   /:[!+-]\?/              display
+syn match tmuxNumber            /\<[+-]\=\d\+/          display
+syn match tmuxSelWindowOption   /:[!+-]\=/              display
 syn match tmuxOptions           /\s-\a\+/               display
 syn match tmuxVariable          /\w\+=/                 display
 syn match tmuxVariableExpansion /\${\=\w\+}\=/          display
@@ -223,7 +223,7 @@ syn match tmuxAdditionalCommand /\\;/ display
 
 syn match tmuxKeyTable /\s\%(-T\)\=\(copy-mode-vi\|copy-mode\|root\)/ display
 
-syn match tmuxColor /\(bright\)\?\(black\|red\|green\|yellow\|blue\|magenta\|cyan\|white\)/ display
+syn match tmuxColor /\(bright\)\=\(black\|red\|green\|yellow\|blue\|magenta\|cyan\|white\)/ display
 syn match tmuxColor /default/        display
 syn match tmuxColor /colour\d\{1,3}/ display
 syn match tmuxColor /#\x\{6}/        display
@@ -236,15 +236,15 @@ syn match tmuxColor /#\x\{6}/        display
 "                    ^-----^
 "                    we don't want that to be highlighted by `tmuxStyle`
 "}}}
-syn match tmuxStyle /\(no\)\?\(bright\|bold\|dim\|underscore\|blink\|-\@1<!reverse\|hidden\|italics\)/ display
+syn match tmuxStyle /\(no\)\=\(bright\|bold\|dim\|underscore\|blink\|-\@1<!reverse\|hidden\|italics\)/ display
 
 syn match tmuxPromptInpol /%\d\|%%%\=/ contained
 
 " Matching `man 3 strftime` formats
-syn match tmuxDateInpol /%[0_^#-]\?[A-DF-IMR-Z+]/     contained
-syn match tmuxDateInpol /%[0_^#-]\?[a-eghj-npr-z]/    contained
-syn match tmuxDateInpol /%[0_^#-]\?E[cCxXyY]/         contained
-syn match tmuxDateInpol /%[0_^#-]\?O[BdeHImMSuUVwWy]/ contained
+syn match tmuxDateInpol /%[0_^#-]\=[A-DF-IMR-Z+]/     contained
+syn match tmuxDateInpol /%[0_^#-]\=[a-eghj-npr-z]/    contained
+syn match tmuxDateInpol /%[0_^#-]\=E[cCxXyY]/         contained
+syn match tmuxDateInpol /%[0_^#-]\=O[BdeHImMSuUVwWy]/ contained
 
 " Format aliases
 syn match tmuxFmtAlias /#[HhDPTSFIW#]/ contained

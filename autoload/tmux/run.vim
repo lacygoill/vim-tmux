@@ -5,6 +5,7 @@ let g:autoloaded_tmux#run = 1
 
 " Init {{{1
 
+import Catch from 'lg.vim'
 const s:PROMPT = '[$%]\s'
 
 " Interface {{{1
@@ -85,7 +86,7 @@ fu s:get_cmd() abort "{{{2
     endif
 
     if cmd == ''
-        if (&ft is# 'vim' || getcwd() is# $HOME..'/wiki/vim') && getline('.') =~# '^\s*' .. cml .. cbi
+        if (&ft is# 'vim' || getcwd() is# $HOME .. '/wiki/vim') && getline('.') =~# '^\s*' .. cml .. cbi
             let cmd = s:get_vim_cmd(cml, cbi)
         elseif &ft is# 'python'
             let cmd = s:get_python_cmd()
@@ -103,13 +104,13 @@ fu s:get_cml() abort "{{{2
         let cml = '["#]'
     else
         let cml = matchstr(&l:cms, '\S*\ze\s*%s')
-        let cml = '\V'..escape(cml, '\')..'\m'
+        let cml = '\V' .. escape(cml, '\') .. '\m'
     endif
     return cml
 endfu
 
 fu s:get_codeblock_indent(cml) abort "{{{2
-    return '\s\{'..(&ft is# 'markdown' || a:cml == '' ? 4 : 5)..'}'
+    return '\s\{' .. (&ft is# 'markdown' || a:cml == '' ? 4 : 5) .. '}'
 endfu
 
 fu s:get_cmd_start(cml, cbi) abort "{{{2
@@ -149,8 +150,8 @@ fu s:get_multiline_codeblock(cml, cbi, curlnum) abort "{{{2
         " We want the alignment of `a`, `b`, `c` and `d` to be preserved.
         "}}}
         let trailing_space = getline('.') =~# '\\\s*$' ? ' ' : ''
-        let indent = getline('.')->matchstr('^\s*'..a:cml..'\s*') .. trailing_space
-        let cmd = map(lines, {_,v -> substitute(v, indent, '', '')})->join("\n")
+        let indent = getline('.')->matchstr('^\s*' .. a:cml .. '\s*') .. trailing_space
+        let cmd = map(lines, {_, v -> substitute(v, indent, '', '')})->join("\n")
     endif
 
     return cmd
@@ -165,10 +166,10 @@ fu s:get_end_lnum(cmd, cml) abort "{{{2
 
     " support heredoc
     elseif a:cmd =~# '<<-\=\([''"]\=\)EOF\1'
-        let end = search('^\s*'..a:cml..'\s*EOF$', 'nW')
+        let end = search('^\s*' .. a:cml .. '\s*EOF$', 'nW')
         if !end | return '' | endif
         " support process substitution containing a heredoc
-        if getline(end + 1) =~# '^\s*'..a:cml..'\s*)'
+        if getline(end + 1) =~# '^\s*' .. a:cml .. '\s*)'
             let end += 1
         endif
     endif
@@ -293,7 +294,7 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
     endif
     let whole_indent = matchstr(startline, '^\s*' .. a:cml .. a:cbi)
     let lines = getline(start, end)
-    let cmd = map(lines, {_,v -> substitute(v, whole_indent .. '\|^\s*' .. a:cml .. '$', '', '')})
+    let cmd = map(lines, {_, v -> substitute(v, whole_indent .. '\|^\s*' .. a:cml .. '$', '', '')})
     let cmd = s:vimify(cmd)
     return join(cmd, "\n")
 endfu
@@ -322,8 +323,8 @@ endfu
 
 fu s:get_python_cmd() abort "{{{2
     sil! update
-    sil call system('python3 -m py_compile '..expand('%:p:S'))
-    return 'cd '..expand('%:p:h')->shellescape()..' && python3 '..expand('%:p:t:S')
+    sil call system('python3 -m py_compile ' .. expand('%:p:S'))
+    return 'cd ' .. expand('%:p:h:S') .. ' && python3 ' .. expand('%:p:t:S')
 endfu
 
 fu s:vimify(cmd) abort "{{{2
@@ -336,7 +337,7 @@ fu s:clear_stale_pane_id() abort "{{{2
     let is_pane_still_open = index(open_panes, s:pane_id) >= 0
     if !is_pane_still_open
         " the pane should be closed, but better be safe
-        sil call system('tmux killp -t '..s:pane_id)
+        sil call system('tmux killp -t ' .. s:pane_id)
         unlet! s:pane_id
     endif
 endfu
@@ -347,7 +348,7 @@ fu s:open_pane_and_save_id() abort "{{{2
         \ shellescape('/run/user/1000/tmp'),
         \ '-d -p 25 -PF "#D"'
         \ ]
-    sil let s:pane_id = system('tmux '..join(cmds))[:-2]
+    sil let s:pane_id = system('tmux ' .. join(cmds))->trim("\n", 2)
 endfu
 
 fu s:close_pane(when) abort "{{{2
@@ -369,11 +370,11 @@ fu s:close_pane(when) abort "{{{2
         augroup END
     else
         try
-            sil call system('tmux killp -t '..s:pane_id)
+            sil call system('tmux killp -t ' .. s:pane_id)
             unlet! s:pane_id s:last_cmd
             au! tmux_run_cmd_close_pane
         catch
-            return lg#catch()
+            return s:Catch()
         endtry
     endif
 endfu
@@ -392,8 +393,8 @@ fu s:run_shell_cmd(cmd) abort "{{{2
         " Don't try to include the key with the other ones and use a single `$ tmux send ...`.
         " For some reason, it doesn't work.
         "}}}
-        sil call system('tmux send -t '..s:pane_id..' G')
-        let clear = 'tmux send -t '..s:pane_id..' C-\\ C-n :qa! Enter'
+        sil call system('tmux send -t ' .. s:pane_id .. ' G')
+        let clear = 'tmux send -t ' .. s:pane_id .. ' C-\\ C-n :qa! Enter'
     else
         " Why not `C-e C-u`?{{{
         "
@@ -408,7 +409,7 @@ fu s:run_shell_cmd(cmd) abort "{{{2
         " It  works  only   because  we  bind  `C-x  C-k`  to   the  zle  widget
         " `kill-buffer` in our zshrc.  See `man zshzle /kill-buffer`.
         "}}}
-        let clear = 'tmux send -t '..s:pane_id..' C-x C-k'
+        let clear = 'tmux send -t ' .. s:pane_id .. ' C-x C-k'
     endif
     sil call system(clear)
 
@@ -422,7 +423,7 @@ fu s:run_shell_cmd(cmd) abort "{{{2
     " https://github.com/tmux/tmux/issues/1849
     " https://github.com/jebaum/vim-tmuxify/issues/11
     "}}}
-    if cmd[-1:] is# ';' | let cmd = cmd[:-2]..'\;' | endif
+    if cmd[-1:] is# ';' | let cmd = cmd[:-2] .. '\;' | endif
     let tempfile = tempname()
     call split(cmd, '\n')->writefile(tempfile, 'b')
 
@@ -439,15 +440,15 @@ fu s:run_shell_cmd(cmd) abort "{{{2
     " Although,  you should  only see  a difference  for huge  commands (several
     " hundreds of lines).
     "}}}
-    sil call system('tmux loadb -b barx '..tempfile
-      \ .. ' \; pasteb -d -p -b barx -t '..s:pane_id
-      \ .. ' \; send -t '..s:pane_id..' C-m'
-      \ )
+    sil call system('tmux loadb -b barx ' .. tempfile
+        \ .. ' \; pasteb -d -p -b barx -t ' .. s:pane_id
+        \ .. ' \; send -t ' .. s:pane_id .. ' C-m'
+        \ )
 endfu
 "}}}1
 " Utilities {{{1
 fu s:is_in_vim_fenced_codeblock() abort "{{{2
-    return synstack(line('.'), col('.'))
+    return synstack('.', col('.'))
         \ ->map('synIDattr(v:val, "name")')
         \ ->match('\cmarkdownHighlightvim') == 0
 endfu
@@ -469,7 +470,7 @@ fu s:is_in_codeblock() abort "{{{2
     " It  *does* contain  the pattern  `codeblock`, but  not at  the end  of the
     " stack, which is the only relevant place.
     "}}}
-    return synstack(line('.'), col('.'))
+    return synstack('.', col('.'))
         \ ->map('synIDattr(v:val, "name")')
         \ ->reverse()
         \ ->match('\ccodeblock') == 0
@@ -480,7 +481,7 @@ fu s:error() abort "{{{2
 endfu
 
 fu s:previous_pane_runs_shell() abort "{{{2
-    sil let number_of_panes = system("tmux display -p '#{window_panes}'")[:-2]
+    sil let number_of_panes = system("tmux display -p '#{window_panes}'")->trim("\n", 2)
     if number_of_panes < 2 | return 0 | endif
 
     " TODO: What if we have run `$ echo text | vim -` in the previous pane.{{{
@@ -517,16 +518,16 @@ fu s:previous_pane_runs_shell() abort "{{{2
     " tried, I got unexpected and inconsistent results.
     " Besides, it seems like a corner case; is it worth the trouble?
     "}}}
-    sil let cmd_in_previous_pane = system("tmux display -p -t! '#{pane_current_command}'")[:-2]
+    sil let cmd_in_previous_pane = system("tmux display -p -t! '#{pane_current_command}'")->trim("\n", 2)
     return cmd_in_previous_pane =~# '^\%(bash\|dash\|zsh\)$'
 endfu
 
 fu s:get_previous_pane_id() abort "{{{2
-    sil return system("tmux display -p -t! '#{pane_id}'")[:-2]
+    sil return system("tmux display -p -t! '#{pane_id}'")->trim("\n", 2)
 endfu
 
 fu s:is_zoomed_window() abort "{{{2
-    sil return system('tmux display -p "#{window_zoomed_flag}"')[:-2]
+    sil return system('tmux display -p "#{window_zoomed_flag}"')->trim("\n", 2)
 endfu
 
 fu s:unzoom_window() abort "{{{2

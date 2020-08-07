@@ -120,11 +120,11 @@ fu tmux#capture_pane#main() abort "{{{2
         " without a shell.  First, you could write the text in a file:
         "
         "     :let tempfile = tempname()
-        "     :call writefile(split(@", '\n'), tempfile, 'b')
+        "     :call split(@", '\n')->writefile(tempfile, 'b')
         "
         " Then you could run:
         "
-        "     :call job_start('xclip -selection clipboard '..tempfile)
+        "     :call job_start('xclip -selection clipboard ' .. tempfile)
         "
         " Why writing the text in a file?
         " Without a file, you would need a pipe; and a pipe can only be parsed by a shell.
@@ -136,9 +136,9 @@ fu tmux#capture_pane#main() abort "{{{2
         " other event like `TextYankPost`.
         "}}}
         au VimLeave *
-        \   if executable('xsel') && strlen(@+) != 0 && strlen(@+) <= 999
-        \ |     sil call system('xsel -ib', @+)
-        \ | endif
+            \   if executable('xsel') && strlen(@+) != 0 && strlen(@+) <= 999
+            \ |     sil call system('xsel -ib', @+)
+            \ | endif
     augroup END
 
     setl fen
@@ -147,7 +147,7 @@ endfu
 " Core {{{1
 fu s:format_xdcc_buffer(pat_cmd) abort "{{{2
     " remove noise
-    exe 'sil keepj keepp v@'..a:pat_cmd..'@d_'
+    exe 'sil keepj keepp v@' .. a:pat_cmd .. '@d_'
     sil keepj keepp %s/^.\{-}\d\+)\s*//e
 
     " align the first 3 fields{{{
@@ -175,7 +175,7 @@ fu s:format_xdcc_buffer(pat_cmd) abort "{{{2
     call matchadd('Underlined', pat_file)
 
     " conceal commands
-    call matchadd('Conceal', a:pat_cmd..'\s*|\s*')
+    call matchadd('Conceal', a:pat_cmd .. '\s*|\s*')
     setl cole=3 cocu=nc
 
     " make filenames interactive{{{
@@ -196,12 +196,12 @@ fu s:format_shell_buffer() abort "{{{2
     sil! call repmap#make#repeatable({
         \ 'mode': '',
         \ 'buffer': 1,
-        \ 'from': expand('<sfile>:p')..':'..expand('<slnum>'),
-        \ 'motions': [{'bwd': '[c',  'fwd': ']c'}]})
+        \ 'from': expand('<sfile>:p') .. ':' .. expand('<slnum>'),
+        \ 'motions': [{'bwd': '[c', 'fwd': ']c'}]})
 
     " remove empty first line, and empty last prompt
     sil! keepj /^\%1l$/d_
-    sil! exe 'keepj /^\%'..line('$')..'l٪$/d_'
+    sil! exe 'keepj /^\%' .. line('$') .. 'l٪$/d_'
 
     " Why the priority 0?{{{
     "
@@ -213,11 +213,11 @@ fu s:format_shell_buffer() abort "{{{2
     let pat_cmd = '^٪.\+' | hi ShellCmd ctermfg=green | call matchadd('ShellCmd', pat_cmd, 0)
 
     if search(pat_cmd, 'n')
-        sil exe 'lvim /'..pat_cmd..'/j %'
+        sil exe 'lvim /' .. pat_cmd .. '/j %'
     endif
 
     let items = getloclist(0)
-    call map(items, {_,v -> extend(v, {'text': substitute(v.text, '٪\zs\s\{2,}', '  ', '')})})
+    call map(items, {_, v -> extend(v, {'text': substitute(v.text, '٪\zs\s\{2,}', '  ', '')})})
     call setloclist(0, [], ' ', {'items': items, 'title': 'last shell commands'})
     " the location list window is automatically opened by one of our autocmds;
     " conceal the location
@@ -257,7 +257,7 @@ fu s:copy_cmd_to_get_file_via_xdcc() abort "{{{2
     "
     "     cmd1 ; cmd2
     "}}}
-    let cmd = '/moviegods_send_me_file '..msg
+    let cmd = '/moviegods_send_me_file ' .. msg
     call setreg('+', [cmd], 'c')
     q!
 endfu

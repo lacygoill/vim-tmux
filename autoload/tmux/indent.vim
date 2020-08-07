@@ -7,12 +7,12 @@ fu tmux#indent() abort
 endfu
 
 fu s:highlight_group(line, col) abort
-    return synIDattr(synID(a:line, a:col, 1), 'name')
+    return synID(a:line, a:col, 1)->synIDattr('name')
 endfu
 
 fu s:prev_line_ends_with_open_string(lnum) abort
     if a:lnum > 1
-        let prev_line_len = strlen(getline(a:lnum - 1))
+        let prev_line_len = getline(a:lnum - 1)->strlen()
         if s:highlight_group(a:lnum - 1, prev_line_len) is# 'tmuxString'
             return 1
         endif
