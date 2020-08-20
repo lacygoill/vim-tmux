@@ -380,6 +380,7 @@ fu s:close_pane(when) abort "{{{2
 endfu
 
 fu s:run_shell_cmd(cmd) abort "{{{2
+    " Warning: cannot detect `vipe(1)`.  Because in that case, `#{pane_current_command}` is `zsh`.
     let pane_is_running_vim = systemlist('tmux display -t ' .. s:pane_id .. ' -p "#{m:*vim,#{pane_current_command}}"')[0]
     if pane_is_running_vim
         " `C-\ C-n` doesn't work at the more prompt.{{{

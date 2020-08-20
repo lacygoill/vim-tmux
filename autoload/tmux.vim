@@ -42,8 +42,7 @@ fu s:remove_first_prompt_line_with_cwd(buffer) abort
 endfu
 
 fu tmux#undo_ftplugin() abort "{{{1
-    setl cms<
-    set efm< mp<
+    set cms< efm< mp<
     nunmap <buffer> g"
     nunmap <buffer> g""
     xunmap <buffer> g"
@@ -240,8 +239,8 @@ endfu
 
 " just open manpage {{{2
 
-fu s:just_open_manpage(highlight_group) abort
-    let char_under_cursor = getline('.')->matchstr('\%' .. col('.') .. 'c.')
+def s:just_open_manpage(highlight_group: string): bool
+    let char_under_cursor = getline('.')->strpart(col('.') - 1)[0]
     let syn_groups =<< trim END
 
         tmuxStringDelimiter
@@ -251,9 +250,8 @@ fu s:just_open_manpage(highlight_group) abort
         tmuxOptionValue
         tmuxNumber
     END
-    return index(syn_groups, a:highlight_group) >= 0 ||
-        \ char_under_cursor =~# '\s'
-endfu
+    return index(syn_groups, highlight_group) >= 0 || char_under_cursor =~ '\s'
+enddef
 
 " 'public' function {{{2
 
