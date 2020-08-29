@@ -86,7 +86,10 @@ fu s:get_cmd() abort "{{{2
     endif
 
     if cmd == ''
-        if (&ft is# 'vim' || getcwd() is# $HOME .. '/wiki/vim') && getline('.') =~# '^\s*' .. cml .. cbi
+        "                                                              ~/wiki/bug/vim.md
+        "                                                         v--------------------------v
+        if (&ft is# 'vim' || getcwd() is# $HOME .. '/wiki/vim' || expand('%:p:t') is# 'vim.md')
+            \ && getline('.') =~# '^\s*' .. cml .. cbi
             let cmd = s:get_vim_cmd(cml, cbi)
         elseif &ft is# 'python'
             let cmd = s:get_python_cmd()
