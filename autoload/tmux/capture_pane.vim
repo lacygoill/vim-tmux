@@ -172,10 +172,10 @@ fu s:format_xdcc_buffer(pat_cmd) abort "{{{2
 
     " highlight filenames
     let pat_file = '\d\+x\s*|\s*[0-9.KMG]*\s*|\s*\zs\S*'
-    call matchadd('Underlined', pat_file)
+    call matchadd('Underlined', pat_file, 0)
 
     " conceal commands
-    call matchadd('Conceal', a:pat_cmd .. '\s*|\s*')
+    call matchadd('Conceal', a:pat_cmd .. '\s*|\s*', 0)
     setl cole=3 cocu=nc
 
     " make filenames interactive{{{
@@ -208,7 +208,16 @@ fu s:format_shell_buffer() abort "{{{2
     " To allow  a search to highlight  text even if it's  already highlighted by
     " this match.
     "}}}
-    hi Cwd ctermfg=blue | call matchadd('Cwd', '.*\ze\%(\n٪\|\%$\)', 0)
+    hi Cwd ctermfg=blue | call matchadd('Cwd', '.*\ze\n٪', 0)
+    " Why don't you use `matchadd()` for the last line of the buffer?{{{
+    "
+    " If we delete the last line of the  buffer, we don't want the new last line
+    " to  be highlighted  as  if it  was printing  the  shell's current  working
+    " directory.  IOW, we need the highlighting  to be attached to the *initial*
+    " last line of the buffer; not whatever last line is at any given time.
+    "}}}
+    call prop_type_add('LastLine', #{highlight: 'Cwd', bufnr: bufnr('%')})
+    call prop_add(line('$'), 1, #{type: 'LastLine', length: col([line('$'), '$']), bufnr: bufnr('%')})
     hi ExitCode ctermfg=red | call matchadd('ExitCode', '\[\d\+\]\ze\%(\n٪\|\%$\)', 0)
     let pat_cmd = '^٪.\+' | hi ShellCmd ctermfg=green | call matchadd('ShellCmd', pat_cmd, 0)
 
@@ -217,8 +226,8 @@ fu s:format_shell_buffer() abort "{{{2
     endif
 
     let items = getloclist(0)
-    call map(items, {_, v -> extend(v, {'text': substitute(v.text, '٪\zs\s\{2,}', '  ', '')})})
-    call setloclist(0, [], ' ', {'items': items, 'title': 'last shell commands'})
+    call map(items, {_, v -> extend(v, #{text: substitute(v.text, '٪\zs\s\{2,}', '  ', '')})})
+    call setloclist(0, [], ' ', #{items: items, title: 'last shell commands'})
     " the location list window is automatically opened by one of our autocmds;
     " conceal the location
     call qf#set_matches('after_tmux_capture_pane:format_shell_buffer', 'Conceal', 'location')
