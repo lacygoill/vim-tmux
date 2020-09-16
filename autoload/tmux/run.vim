@@ -9,16 +9,21 @@ import Catch from 'lg.vim'
 const s:PROMPT = '[$%]\s'
 
 " Interface {{{1
-fu tmux#run#command(...) abort "{{{2
+fu tmux#run#command(cmd = '') abort "{{{2
     if !exists('$TMUX') | echo 'requires tmux' | return | endif
-    if !a:0
+    if a:cmd == ''
         let &opfunc = 'tmux#run#command'
         return 'g@l'
     endif
-    " flag meaning that we've pressed `||`, and we just want to repeat the last command
-    let repeat = a:1 is# 'repeat'
+    " boolean meaning that we've pressed `||`, and we just want to repeat the last command
+    let repeat = a:cmd is# 'repeat'
     if !repeat
-        let cmd = s:get_cmd()
+        let cmd_is_actually_type = index(['char', 'line', 'block'], a:cmd) >= 0
+        if cmd_is_actually_type
+            let cmd = s:get_cmd()
+        else
+            let cmd = a:cmd
+        endif
         if empty(cmd) | return | endif
     elseif repeat && !exists('s:last_cmd')
         if s:previous_pane_runs_shell()
@@ -267,9 +272,9 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
     " sure we land on a code block.
     "}}}
     let l:Skip = {-> !s:is_in_codeblock()}
-    let start = search(inside, 'W', 0, 500, l:Skip)
+    let start = search(inside, 'W', 0, 500, Skip)
     call search(outside .. '\|\%$', 'W')
-    let end = search(inside, 'bW', 0, 500, l:Skip)
+    let end = search(inside, 'bW', 0, 500, Skip)
     call setpos('.', curpos)
     if !start || !end | return '' | endif
 
@@ -383,21 +388,13 @@ fu s:close_pane(when) abort "{{{2
 endfu
 
 fu s:run_shell_cmd(cmd) abort "{{{2
-    " Warning: cannot detect `vipe(1)`.  Because in that case, `#{pane_current_command}` is `zsh`.
-    let pane_is_running_vim = systemlist('tmux display -t ' .. s:pane_id .. ' -p "#{m:*vim,#{pane_current_command}}"')[0]
-    if pane_is_running_vim
-        " `C-\ C-n` doesn't work at the more prompt.{{{
-        "
-        " We need `G` or `q` to quit it.
-        " We don't use `q`, because I'm not sure `C-\\ C-n` would work afterward
-        " if we're in visual mode for example.
-        "
-        " ---
+    if s:pane_is_running_vim()
+        " `C-\ C-n` doesn't work at the more prompt, nor in a confirmation prompt (e.g. `s/pat/rep/c`).{{{
         "
         " Don't try to include the key with the other ones and use a single `$ tmux send ...`.
-        " For some reason, it doesn't work.
+        " For some reason, it doesn't (always?) work.
         "}}}
-        sil call system('tmux send -t ' .. s:pane_id .. ' G')
+        sil call system('tmux send -t ' .. s:pane_id .. ' C-c')
         let clear = 'tmux send -t ' .. s:pane_id .. ' C-\\ C-n :qa! Enter'
     else
         " Why not `C-e C-u`?{{{
@@ -431,23 +428,30 @@ fu s:run_shell_cmd(cmd) abort "{{{2
     let tempfile = tempname()
     call split(cmd, '\n')->writefile(tempfile, 'b')
 
-    " Many lines are prefixed with a weird prompt!{{{
-    "
-    "     heredoc>
-    "     cmdsubst>
-    "     cmdsubst heredoc>
-    "
-    " Not much you can do.
-    "
-    " You could get rid of them by adding a `:sleep 200m` before `$ tmux pasteb`;
-    " but for some reason, it would take more time for the command to be executed.
-    " Although,  you should  only see  a difference  for huge  commands (several
-    " hundreds of lines).
-    "}}}
-    sil call system('tmux loadb -b barx ' .. tempfile
+    let tmux_cmd = 'tmux loadb -b barx ' .. tempfile
         \ .. ' \; pasteb -d -p -b barx -t ' .. s:pane_id
         \ .. ' \; send -t ' .. s:pane_id .. ' C-m'
-        \ )
+
+    " `C-c` is not always instantaneous.
+    " Sometimes, Vim needs one second or two; that can happen when some errors are raised.
+    if !s:pane_is_running_vim()
+        " Many lines are prefixed with a weird prompt!{{{
+        "
+        "     heredoc>
+        "     cmdsubst>
+        "     cmdsubst heredoc>
+        "
+        " Not much you can do.
+        "
+        " You could get rid of them by adding a `:sleep 200m` before `$ tmux pasteb`;
+        " but for some reason, it would take more time for the command to be executed.
+        " Although,  you should  only see  a difference  for huge  commands (several
+        " hundreds of lines).
+        "}}}
+        sil call system(tmux_cmd)
+    else
+        sil call timer_start(2000, {-> system(tmux_cmd)})
+    endif
 endfu
 "}}}1
 " Utilities {{{1
@@ -536,5 +540,11 @@ endfu
 
 fu s:unzoom_window() abort "{{{2
     sil call system('tmux resizep -Z')
+endfu
+
+fu s:pane_is_running_vim() abort
+    " Warning: cannot detect `vipe(1)`, because in that case, `#{pane_current_command}` is `zsh`.
+    let cmd = 'tmux display -t ' .. s:pane_id .. ' -p "#{m:*vim,#{pane_current_command}}"'
+    return systemlist(cmd)[0]
 endfu
 

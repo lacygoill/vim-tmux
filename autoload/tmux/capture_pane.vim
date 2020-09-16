@@ -1,3 +1,5 @@
+const s:SFILE = expand('<sfile>:p')
+
 " Interface {{{1
 fu tmux#capture_pane#main() abort "{{{2
     " Purpose:{{{
@@ -196,7 +198,7 @@ fu s:format_shell_buffer() abort "{{{2
     sil! call repmap#make#repeatable({
         \ 'mode': '',
         \ 'buffer': 1,
-        \ 'from': expand('<sfile>:p') .. ':' .. expand('<slnum>'),
+        \ 'from': s:SFILE .. ':' .. expand('<sflnum>'),
         \ 'motions': [{'bwd': '[c', 'fwd': ']c'}]})
 
     " remove empty first line, and empty last prompt
