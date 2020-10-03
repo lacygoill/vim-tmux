@@ -10,36 +10,87 @@ syn keyword tmuxHookCmds set-hook show-hooks
 
 syn keyword tmuxAction  any current none
 syn keyword tmuxBoolean off on
-syn keyword tmuxOptionValue top bottom left right top-left top-right
-syn keyword tmuxOptionValue bottom-left bottom-right centre
-syn keyword tmuxOptionValue vi emacs copy
-syn keyword tmuxOptionValue bash zsh fish
-syn keyword tmuxLayoutOptionValue even-horizontal even-vertical main-horizontal
-syn keyword tmuxLayoutOptionValue main-vertical tiled
 
-syn keyword tmuxClientSessionCmds attach[-session] detach[-client] has[-session]
-syn keyword tmuxClientSessionCmds kill-server kill-session lsc list-clients lscm
-syn keyword tmuxClientSessionCmds list-commands ls list-sessions lockc lock-client
-syn keyword tmuxClientSessionCmds locks lock-session new[-session] refresh[-client]
-syn keyword tmuxClientSessionCmds rename[-session] showmsgs show-messages
-syn keyword tmuxClientSessionCmds source[-file] start[-server] suspendc
-syn keyword tmuxClientSessionCmds suspend-client switchc switch-client
+syn keyword tmuxOptionValue
+    \ bottom
+    \ bottom-left
+    \ bottom-right
+    \ centre
+    \ copy
+    \ emacs
+    \ left
+    \ right
+    \ top
+    \ top-left
+    \ top-right
+    \ vi
 
-syn keyword tmuxWindowPaneCmds copy-mode breakp break-pane capturep capture-pane
-syn keyword tmuxWindowPaneCmds choose-client choose-session choose-tree
-syn keyword tmuxWindowPaneCmds choose-window displayp display-panes findw
-syn keyword tmuxWindowPaneCmds find-window joinp join-pane killp kill-pane
-syn keyword tmuxWindowPaneCmds killw kill-window lastp last-pane last[-window]
-syn keyword tmuxWindowPaneCmds linkw link-window lsp list-panes lsw list-windows
-syn keyword tmuxWindowPaneCmds movep move-pane movew move-window neww new-window
-syn keyword tmuxWindowPaneCmds nextl next-layout next[-window] pipep pipe-pane
-syn keyword tmuxWindowPaneCmds prevl previous-layout prev[ious-window] renamew
-syn keyword tmuxWindowPaneCmds rename-window resizep resize-pane respawnp
-syn keyword tmuxWindowPaneCmds respawn-pane respawnw respawn-window rotatew
-syn keyword tmuxWindowPaneCmds rotate-window selectl select-layout selectp
-syn keyword tmuxWindowPaneCmds select-pane selectw select-window splitw
-syn keyword tmuxWindowPaneCmds split-window swapp swap-pane swapw swap-window
-syn keyword tmuxWindowPaneCmds unlinkw unlink-window
+syn keyword tmuxLayoutOptionValue
+    \ even-horizontal
+    \ even-vertical
+    \ main-horizontal
+    \ main-vertical
+    \ tiled
+
+syn keyword tmuxClientSessionCmds
+    \ attach[-session]
+    \ detach[-client]
+    \ has[-session]
+    \ kill-server
+    \ kill-session
+    \ list-clients lsc
+    \ list-commands lscm
+    \ list-sessions ls
+    \ lock-client lockc
+    \ lock-session locks
+    \ new[-session]
+    \ refresh[-client]
+    \ rename[-session]
+    \ show-messages showmsgs
+    \ source[-file]
+    \ start[-server]
+    \ suspend-client suspendc
+    \ switch-client switchc
+
+syn keyword tmuxWindowPaneCmds
+    \ break-pane breakp
+    \ capture-pane capturep
+    \ choose-client
+    \ choose-session
+    \ choose-tree
+    \ choose-window
+    \ copy-mode
+    \ display-panes displayp
+    \ display-popup popup
+    \ find-window findw
+    \ join-pane joinp
+    \ kill-pane killp
+    \ kill-window killw
+    \ last-pane lastp
+    \ last[-window]
+    \ link-window linkw
+    \ list-panes lsp
+    \ list-windows lsw
+    \ move-pane movep
+    \ move-window movew
+    \ new-window neww
+    \ next-layout nextl
+    \ next[-window]
+    \ pipe-pane pipep
+    \ prev[ious-window]
+    \ previous-layout prevl
+    \ rename-window renamew
+    \ resize-pane resizep
+    \ respawn-pane respawnp
+    \ respawn-window respawnw
+    \ rotate-window rotatew
+    \ select-layout selectl
+    \ select-pane selectp
+    \ select-window selectw
+    \ split-window splitw
+    \ swap-pane swapp
+    \ swap-window swapw
+    \ unlink-window unlinkw
 
 syn keyword tmuxBindingCmds lsk list-keys send[-keys] send-prefix
 
@@ -47,95 +98,196 @@ syn keyword tmuxEnvironmentCmds setenv set-environment showenv show-environment
 
 syn keyword tmuxStatusLineCmds command-prompt confirm[-before] display[-message] display-menu menu
 
-syn keyword tmuxBufferCmds choose-buffer clearhist clear-history deleteb
-syn keyword tmuxBufferCmds delete-buffer lsb list-buffers loadb load-buffer
-syn keyword tmuxBufferCmds pasteb paste-buffer saveb save-buffer setb set-buffer
-syn keyword tmuxBufferCmds showb show-buffer
+syn keyword tmuxBufferCmds
+    \ choose-buffer
+    \ clear-history clearhist
+    \ delete-buffer deleteb
+    \ list-buffers lsb
+    \ load-buffer loadb
+    \ paste-buffer pasteb
+    \ save-buffer saveb
+    \ set-buffer setb
+    \ show-buffer showb
 
 syn keyword tmuxMiscCmds clock-mode if[-shell] lock[-server] wait[-for]
-" obsolete (not in manpage anymore)
-syn keyword tmuxMiscCmds info server-info
 
-syn keyword tmuxOptsSet prefix prefix2 status status-fg status-bg bell-action
-syn keyword tmuxOptsSet default-command history-file history-limit status-left status-right
-syn keyword tmuxOptsSet status-interval set-titles display-time buffer-limit
-syn keyword tmuxOptsSet status-left-length status-right-length status-position
-syn keyword tmuxOptsSet message-command-bg message-bg lock-after-time default-path
-syn keyword tmuxOptsSet message-command-attr message-attr status-attr set-remain-on-exit
-syn keyword tmuxOptsSet status-utf8 default-terminal visual-activity repeat-time
-syn keyword tmuxOptsSet visual-bell visual-content status-justify status-keys
-syn keyword tmuxOptsSet terminal-overrides status-left-attr status-left-bg
-syn keyword tmuxOptsSet status-left-fg status-right-attr status-right-bg
-syn keyword tmuxOptsSet status-right-fg status-style update-environment base-index
-syn keyword tmuxOptsSet display-panes-colour display-panes-time default-shell
-syn keyword tmuxOptsSet set-titles-string lock-command lock-server
-syn keyword tmuxOptsSet mouse-select-pane message-limit quiet escape-time
-syn keyword tmuxOptsSet pane-active-border-bg pane-active-border-fg
-syn keyword tmuxOptsSet pane-border-bg pane-border-fg message-command-fg message-fg
-syn keyword tmuxOptsSet pane-border-status pane-border-format
-syn keyword tmuxOptsSet display-panes-active-colour alternate-screen
-syn keyword tmuxOptsSet detach-on-destroy word-separators
-syn keyword tmuxOptsSet destroy-unattached exit-unattached focus-events set-clipboard
-syn keyword tmuxOptsSet bell-on-alert mouse-select-window mouse-utf8
-syn keyword tmuxOptsSet mouse-resize-pane mouse
-syn keyword tmuxOptsSet renumber-windows visual-silence
-syn keyword tmuxOptsSet show[-options] showw show-window-options
-syn keyword tmuxOptsSet extended-keys
+syn keyword tmuxOptsSet
+    \ alternate-screen
+    \ base-index
+    \ bell-action
+    \ buffer-limit
+    \ default-command
+    \ default-shell
+    \ default-terminal
+    \ destroy-unattached
+    \ detach-on-destroy
+    \ display-panes-active-colour
+    \ display-panes-colour
+    \ display-panes-time
+    \ display-time
+    \ escape-time
+    \ exit-unattached
+    \ extended-keys
+    \ focus-events
+    \ history-file
+    \ history-limit
+    \ lock-after-time
+    \ lock-command
+    \ lock-server
+    \ message-limit
+    \ mouse
+    \ pane-border-format
+    \ pane-border-status
+    \ prefix
+    \ prefix2
+    \ renumber-windows
+    \ repeat-time
+    \ set-clipboard
+    \ set-titles
+    \ set-titles-string
+    \ show[-options]
+    \ status
+    \ status-interval
+    \ status-justify
+    \ status-keys
+    \ status-left
+    \ status-left-length
+    \ status-position
+    \ status-right
+    \ status-right-length
+    \ status-style
+    \ terminal-overrides
+    \ update-environment
+    \ visual-activity
+    \ visual-bell
+    \ visual-silence
+    \ word-separators
 
 syn match tmuxUserOptsSet /@[[:alnum:]_-]\+/ display
 
-syn keyword tmuxOptsSetw monitor-activity aggressive-resize force-width
-syn keyword tmuxOptsSetw force-height remain-on-exit mode-fg mode-bg
-syn keyword tmuxOptsSetw mode-keys clock-mode-colour clock-mode-style
-syn keyword tmuxOptsSetw mode-attr window-status-attr
-syn keyword tmuxOptsSetw window-status-bg window-status-fg automatic-rename
-syn keyword tmuxOptsSetw main-pane-width main-pane-height monitor-content
-syn keyword tmuxOptsSetw window-status-current-attr window-status-current-bg
-syn keyword tmuxOptsSetw window-status-current-fg mode-mouse synchronize-panes
-syn keyword tmuxOptsSetw window-status-format window-status-current-format
-syn keyword tmuxOptsSetw window-status-activity-attr
-syn keyword tmuxOptsSetw window-status-activity-bg window-status-activity-fg
-syn keyword tmuxOptsSetw window-status-bell-attr
-syn keyword tmuxOptsSetw window-status-bell-bg window-status-bell-fg
-syn keyword tmuxOptsSetw window-status-content-attr
-syn keyword tmuxOptsSetw window-status-content-bg window-status-content-fg
-syn keyword tmuxOptsSetw window-status-separator window-status-last-attr
-syn keyword tmuxOptsSetw window-status-last-fg window-status-last-bg
-syn keyword tmuxOptsSetw window-status-activity-style window-status-bell-style
-syn keyword tmuxOptsSetw pane-base-index other-pane-height other-pane-width
-syn keyword tmuxOptsSetw allow-rename c0-change-interval c0-change-trigger
-syn keyword tmuxOptsSetw layout-history-limit monitor-silence utf8 wrap-search
-syn keyword tmuxOptsSetw window-active-style window-style
-syn keyword tmuxOptsSetw pane-border-lines pane-active-border-style pane-border-style
+syn keyword tmuxOptsSetw
+    \ aggressive-resize
+    \ allow-rename
+    \ automatic-rename
+    \ clock-mode-colour
+    \ clock-mode-style
+    \ main-pane-height
+    \ main-pane-width
+    \ mode-keys
+    \ monitor-activity
+    \ monitor-silence
+    \ other-pane-height
+    \ other-pane-width
+    \ pane-active-border-style
+    \ pane-base-index
+    \ pane-border-lines
+    \ pane-border-style
+    \ remain-on-exit
+    \ synchronize-panes
+    \ utf8
+    \ window-active-style
+    \ window-status-activity-style
+    \ window-status-bell-style
+    \ window-status-current-format
+    \ window-status-format
+    \ window-status-separator
+    \ window-style
+    \ wrap-search
 
 " keywords for vi/emacs edit, choice and copy modes
-syn keyword tmuxModeCmds append-selection back-to-indentation backspace
-syn keyword tmuxModeCmds begin-selection bottom-line cancel choose clear-selection
-syn keyword tmuxModeCmds complete copy-end-of-line copy-pipe copy-pipe-and-cancel
-syn keyword tmuxModeCmds copy-selection copy-selection-and-cancel copy-line
-syn keyword tmuxModeCmds cursor-down cursor-left cursor-right cursor-up
-syn keyword tmuxModeCmds delete delete-end-of-line delete-line delete-word down
-syn keyword tmuxModeCmds end-of-line end-of-list enter goto-line halfpage-down
-syn keyword tmuxModeCmds halfpage-up history-bottom history-down history-top
-syn keyword tmuxModeCmds history-up jump-again jump-backward jump-forward
-syn keyword tmuxModeCmds jump-reverse jump-to-backward jump-to-forward jump-to-mark middle-line
-syn keyword tmuxModeCmds next-matching-bracket next-space next-space-end next-word next-word-end
-syn keyword tmuxModeCmds other-end page-down page-up paste previous-space previous-word
-syn keyword tmuxModeCmds rectangle-toggle scroll-down scroll-up search-again
-syn keyword tmuxModeCmds search-backward search-forward search-reverse select-line select-word
-syn keyword tmuxModeCmds set-mark start-named-buffer start-number-prefix start-of-line
-syn keyword tmuxModeCmds start-of-list stop-selection switch-mode switch-mode-append
-syn keyword tmuxModeCmds switch-mode-append-line switch-mode-begin-line
-syn keyword tmuxModeCmds switch-mode-change-line switch-mode-substitute
-syn keyword tmuxModeCmds switch-mode-substitute-line top-line transpose-chars
-syn keyword tmuxModeCmds tree-collapse tree-collapse-all tree-expand
-syn keyword tmuxModeCmds tree-expand-all tree-toggle up
+syn keyword tmuxModeCmds
+    \ append-selection
+    \ append-selection-and-cancel
+    \ back-to-indentation
+    \ begin-selection
+    \ bottom-line
+    \ cancel
+    \ clear-selection
+    \ copy-end-of-line
+    \ copy-line
+    \ copy-pipe
+    \ copy-pipe-and-cancel
+    \ copy-pipe-no-clear
+    \ copy-selection
+    \ copy-selection-and-cancel
+    \ copy-selection-no-clear
+    \ cursor-down
+    \ cursor-down-and-cancel
+    \ cursor-left
+    \ cursor-right
+    \ cursor-up
+    \ end-of-line
+    \ goto-line
+    \ halfpage-down
+    \ halfpage-down-and-cancel
+    \ halfpage-up
+    \ history-bottom
+    \ history-top
+    \ jump-again
+    \ jump-backward
+    \ jump-forward
+    \ jump-reverse
+    \ jump-to-backward
+    \ jump-to-forward
+    \ jump-to-mark
+    \ middle-line
+    \ next-matching-bracket
+    \ next-paragraph
+    \ next-space
+    \ next-space-end
+    \ next-word
+    \ next-word-end
+    \ other-end
+    \ page-down
+    \ page-down-and-cancel
+    \ page-up
+    \ previous-matching-bracket
+    \ previous-paragraph
+    \ previous-space
+    \ previous-word
+    \ rectangle-toggle
+    \ refresh-from-pane
+    \ scroll-down
+    \ scroll-down-and-cancel
+    \ scroll-up
+    \ search-again
+    \ search-backward
+    \ search-backward-incremental
+    \ search-backward-text
+    \ search-forward
+    \ search-forward-incremental
+    \ search-forward-text
+    \ search-reverse
+    \ select-line
+    \ select-word
+    \ set-mark
+    \ start-of-line
+    \ stop-selection
+    \ top-line
 
 " These keys can be used for the 'bind' command
-syn keyword tmuxKeySymbol Enter Escape Space BSpace Home End Tab BTab DC IC
-syn keyword tmuxKeySymbol F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12
-syn keyword tmuxKeySymbol NPage PageDown PgDn PPage PageUp PgUp
-syn keyword tmuxKeySymbol Up Down Left Right
+syn keyword tmuxKeySymbol
+    \ BSpace
+    \ BTab
+    \ DC
+    \ Down
+    \ End
+    \ Enter
+    \ Escape
+    \ F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12
+    \ Home
+    \ IC
+    \ Left
+    \ NPage
+    \ PPage
+    \ PageDown
+    \ PageUp
+    \ PgDn
+    \ PgUp
+    \ Right
+    \ Space
+    \ Tab
+    \ Up
 
 " these commands are special when at the beginning of the line
 syn match tmuxMiscCmds        /run\(-shell\)\=/ display

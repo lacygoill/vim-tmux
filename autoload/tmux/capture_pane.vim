@@ -25,27 +25,14 @@ fu tmux#capture_pane#main() abort "{{{2
     " in the shell; see the one-shot autocmd at the end.
     "}}}
 
-    " we don't want the modified flag in the status line (nor folding to interfere in the next editions)
-    setl bt=nofile nofen
+    " we don't want folding to interfere in the next editions
+    setl nofen
 
     sil! TW
     exe '$' | call search('^\S', 'bW')
     sil keepj keepp .,$g/^\s*$/d_
 
     " TODO: should we disable folding, just in case?
-    " TODO: highlight cwd above shell command with HG `Directory`
-
-    " Warning: be careful of a pitfall if you save the file in `/tmp` {{{
-    "
-    " The buffer will probably  be wrongly highlighted as a conf  file if one of
-    " its first lines start with a `#`.
-    " Right now, we don't have this issue, because when we invoke this function,
-    " Vim is passed a pseudo file in `/proc`; and we've configured Vim to ignore
-    " the filetype detection of such files:
-    "
-    "     let g:ft_ignore_pat = '\.\%(Z\|gz\|bz2\|zip\|tgz\|log\)$\|^/proc/'
-    "                                                               ^-----^
-    "}}}
 
     let pat_cmd = '\m\C/MSG\s\+.\{-}XDCC\s\+SEND\s\+\d\+'
     " Format the buffer if it contains commands to downloads files via xdcc.{{{
@@ -144,6 +131,22 @@ fu tmux#capture_pane#main() abort "{{{2
     augroup END
 
     setl fen
+
+    if !exists('b:repeatable_motions')
+        return
+    endif
+    " The buffer might be wrongly highlighted as a conf file.{{{
+    "
+    " That happens  if one of the  first lines start  with `#`, and we  save the
+    " buffer in a file in `/tmp`.
+    "
+    " We don't  have this issue  with a  pseudo-file in `/proc/`,  because we've
+    " configured Vim to ignore the filetype detection of such files:
+    "
+    "     let g:ft_ignore_pat = '\.\%(Z\|gz\|bz2\|zip\|tgz\|log\)$\|^/proc/'
+    "                                                               ^-----^
+    "}}}
+    setl ft=
 endfu
 "}}}1
 " Core {{{1
@@ -200,6 +203,8 @@ fu s:format_shell_buffer() abort "{{{2
         \ 'buffer': 1,
         \ 'from': s:SFILE .. ':' .. expand('<sflnum>'),
         \ 'motions': [{'bwd': '[c', 'fwd': ']c'}]})
+    " We might need to run `set ft=`, which can break our mappings.
+    let b:undo_ftplugin = ''
 
     " remove empty first line, and empty last prompt
     sil! keepj /^\%1l$/d_
@@ -210,7 +215,9 @@ fu s:format_shell_buffer() abort "{{{2
     " To allow  a search to highlight  text even if it's  already highlighted by
     " this match.
     "}}}
-    hi Cwd ctermfg=blue | call matchadd('Cwd', '.*\ze\n٪', 0)
+    hi Cwd ctermfg=blue
+    call matchadd('Cwd', '.*\ze\n٪', 0)
+
     " Why don't you use `matchadd()` for the last line of the buffer?{{{
     "
     " If we delete the last line of the  buffer, we don't want the new last line
@@ -220,24 +227,12 @@ fu s:format_shell_buffer() abort "{{{2
     "}}}
     call prop_type_add('LastLine', #{highlight: 'Cwd', bufnr: bufnr('%')})
     call prop_add(line('$'), 1, #{type: 'LastLine', length: col([line('$'), '$']), bufnr: bufnr('%')})
-    hi ExitCode ctermfg=red | call matchadd('ExitCode', '\[\d\+\]\ze\%(\n٪\|\%$\)', 0)
-    let pat_cmd = '^٪.\+' | hi ShellCmd ctermfg=green | call matchadd('ShellCmd', pat_cmd, 0)
 
-    if search(pat_cmd, 'n')
-        sil exe 'lvim /' .. pat_cmd .. '/j %'
-    endif
+    hi ExitCode ctermfg=red
+    call matchadd('ExitCode', '\[\d\+\]\ze\%(\n٪\|\%$\)', 0)
 
-    let items = getloclist(0)
-    call map(items, {_, v -> extend(v, #{text: substitute(v.text, '٪\zs\s\{2,}', '  ', '')})})
-    call setloclist(0, [], ' ', #{items: items, title: 'last shell commands'})
-    " the location list window is automatically opened by one of our autocmds;
-    " conceal the location
-    call qf#set_matches('after_tmux_capture_pane:format_shell_buffer', 'Conceal', 'location')
-    call qf#create_matches()
-    lclose
-    " make `]l` repeatable immediately
-    do <nomodeline> CursorHold
-    norm! gg
+    hi ShellCmd ctermfg=green
+    call matchadd('ShellCmd', '^٪.\+', 0)
 endfu
 
 fu s:copy_cmd_to_get_file_via_xdcc() abort "{{{2

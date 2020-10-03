@@ -240,8 +240,8 @@ endfu
 " just open manpage {{{2
 
 def s:just_open_manpage(highlight_group: string): bool
-    let char_under_cursor = getline('.')->strpart(col('.') - 1)[0]
-    let syn_groups =<< trim END
+    var char_under_cursor = getline('.')->strpart(col('.') - 1)[0]
+    var syn_groups =<< trim END
 
         tmuxStringDelimiter
         tmuxOptions
