@@ -188,21 +188,22 @@ fu s:format_xdcc_buffer(pat_cmd) abort "{{{2
     " You don't need  `"+y`.
     " `y` is enough, provided that the next one-shot autocmd is installed.
     "}}}
-    nno <buffer><nowait><silent> <cr> :<c-u>call <sid>copy_cmd_to_get_file_via_xdcc()<cr>
-    nmap <buffer><nowait><silent> ZZ <cr>
+    nno <buffer><nowait> <cr> <cmd>call <sid>copy_cmd_to_get_file_via_xdcc()<cr>
+    nmap <buffer><nowait> ZZ <cr>
 
     " let us jump from one filename to another by pressing `n` or `N`
     call setreg('/', [pat_file], 'c')
 endfu
 
 fu s:format_shell_buffer() abort "{{{2
-    noremap <buffer><expr><nowait><silent> [c brackets#move#regex('shell_prompt', 0)
-    noremap <buffer><expr><nowait><silent> ]c brackets#move#regex('shell_prompt', 1)
-    sil! call repmap#make#repeatable({
-        \ 'mode': '',
-        \ 'buffer': 1,
-        \ 'from': s:SFILE .. ':' .. expand('<sflnum>'),
-        \ 'motions': [{'bwd': '[c', 'fwd': ']c'}]})
+    noremap <buffer><expr><nowait> [c brackets#move#regex('shell_prompt', 0)
+    noremap <buffer><expr><nowait> ]c brackets#move#regex('shell_prompt', 1)
+    sil! call repmap#make#repeatable(#{
+        \ mode: '',
+        \ buffer: 1,
+        \ from: s:SFILE .. ':' .. expand('<sflnum>'),
+        \ motions: [{'bwd': '[c', 'fwd': ']c'}]
+        \ })
     " We might need to run `set ft=`, which can break our mappings.
     let b:undo_ftplugin = ''
 

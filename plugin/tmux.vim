@@ -22,4 +22,4 @@ com -bar -nargs=1 TxPasteLastShellCmd call tmux#paste_last_shell_cmd(<args>)
 com -bar -nargs=1 TmuxRunThis call tmux#run#command(<q-args>)
 
 nno <expr><unique> <bar>x tmux#run#command()
-nno <unique><silent> <bar><bar> :<c-u>call tmux#run#command('repeat')<cr>
+nno <unique> <bar><bar> <cmd>call tmux#run#command('repeat')<cr>
