@@ -239,7 +239,7 @@ endfu
 
 " just open manpage {{{2
 
-def s:just_open_manpage(highlight_group: string): bool
+def s:JustOpenManpage(highlight_group: string): bool
     var char_under_cursor = getline('.')->strpart(col('.') - 1)[0]
     var syn_groups =<< trim END
 
@@ -274,7 +274,7 @@ fu tmux#man(...) abort
     let keyword = expand('<cWORD>')
 
     let highlight_group = synID('.', col('.'), 1)->synIDtrans()->synIDattr('name')
-    if s:just_open_manpage(highlight_group)
+    if s:JustOpenManpage(highlight_group)
         Man tmux
     elseif has_key(s:highlight_group_to_match_mapping, highlight_group)
         return s:highlight_group_based_jump(highlight_group, keyword)
