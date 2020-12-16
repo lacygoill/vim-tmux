@@ -361,7 +361,7 @@ endfu
 
 fu s:close_pane(when) abort "{{{2
     if a:when is# 'later'
-        augroup tmux_run_cmd_close_pane | au!
+        augroup TmuxRunCmdClosePane | au!
             " Is it ok to remove *all* autocmds?{{{
             "
             " For the moment, yes.
@@ -380,7 +380,7 @@ fu s:close_pane(when) abort "{{{2
         try
             sil call system('tmux killp -t ' .. s:pane_id)
             unlet! s:pane_id s:last_cmd
-            au! tmux_run_cmd_close_pane
+            au! TmuxRunCmdClosePane
         catch
             return s:Catch()
         endtry

@@ -65,7 +65,7 @@ fu tmux#capture_pane#main() abort "{{{2
     " So, I want this autocmd to replace the one in the vimrc.
     " It's probably unnecessary but better be safe than sorry.
     "}}}
-    augroup make_clipboard_persist_after_quitting_vim | au!
+    augroup MakeClipboardPersistAfterQuittingVim | au!
         " Do *not* use the pattern `<buffer>`!{{{
         "
         " Atm, we open the qf window.
