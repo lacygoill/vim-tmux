@@ -330,7 +330,7 @@ fu tmux#filterop_core(type) abort
             call system('')
             throw output
         elseif output =~# '\S'
-            let all_output ..= "\n> " .. output[0:-2]
+            let all_output ..= "\n> " .. output[0 : -2]
         endif
 
         let index += 1

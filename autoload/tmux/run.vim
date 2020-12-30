@@ -424,7 +424,7 @@ fu s:run_shell_cmd(cmd) abort "{{{2
     " https://github.com/tmux/tmux/issues/1849
     " https://github.com/jebaum/vim-tmuxify/issues/11
     "}}}
-    if cmd[-1:] is# ';' | let cmd = cmd[:-2] .. '\;' | endif
+    if cmd[-1 :] is# ';' | let cmd = cmd[: -2] .. '\;' | endif
     let tempfile = tempname()
     call split(cmd, '\n')->writefile(tempfile, 'b')
 
