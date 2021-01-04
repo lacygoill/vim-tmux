@@ -397,6 +397,18 @@ fu s:run_shell_cmd(cmd) abort "{{{2
         sil call system('tmux send -t ' .. s:pane_id .. ' C-c')
         let clear = 'tmux send -t ' .. s:pane_id .. ' C-\\ C-n :qa! Enter'
     else
+        " Why `ZQ`?{{{
+        "
+        " In  case  `s:pane_is_running_vim()`  failed  to detect  that  Vim  was
+        " running in the pane.  That can happen, for example, if we've run:
+        "
+        "     $ git diff 2>&1 | vipe >/dev/null
+        "
+        " Obviously, `ZQ`  is not perfect;  there could  be more than  1 window.
+        " But we can't  press `:qa! Enter`; if Vim is really  not running in the
+        " pane, that  would cause `qa!`  to be  run which could  have unexpected
+        " side-effects.
+        "}}}
         " Why not `C-e C-u`?{{{
         "
         " The command-line could contain several lines of code (e.g. heredoc).
@@ -410,7 +422,7 @@ fu s:run_shell_cmd(cmd) abort "{{{2
         " It  works  only   because  we  bind  `C-x  C-k`  to   the  zle  widget
         " `kill-buffer` in our zshrc.  See `man zshzle /kill-buffer`.
         "}}}
-        let clear = 'tmux send -t ' .. s:pane_id .. ' C-x C-k'
+        let clear = 'tmux send -t ' .. s:pane_id .. ' ZQ C-x C-k'
     endif
     sil call system(clear)
 
