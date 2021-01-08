@@ -191,7 +191,7 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
     "     " too verbose
     "     ✘
     "     $ vim -Nu NONE -S <(cat <<'EOF'
-    "         vim9script
+    "         vim9
     "         def g:Func()
     "             echo 'before error'
     "             invalid
@@ -201,7 +201,7 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
     "     )
     "
     "     ✔
-    "     vim9script
+    "     vim9
     "     def g:Func()
     "         echo 'before error'
     "         invalid
@@ -225,7 +225,7 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
         " be able  to run the second  block without the first  one being wrongly
         " merged with the output lines.  Example:
         "
-        "     vim9script
+        "     vim9
         "     def FuncA()
         "         def FuncB()
         "         enddef
@@ -234,7 +234,7 @@ fu s:get_vim_cmd(cml, cbi) abort "{{{2
         "
         "     E117: Unknown function: FuncB~
         "
-        "     vim9script
+        "     vim9
         "     def FuncA()
         "         def FuncB()
         "         enddef
