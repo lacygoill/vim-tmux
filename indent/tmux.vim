@@ -2,7 +2,7 @@ if exists('b:did_indent')
     finish
 endif
 
-setl indentexpr=tmux#indent()
+setl indentexpr=tmux#indent#expr()
 setl indentkeys=o
 
 " Teardown {{{1

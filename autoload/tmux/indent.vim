@@ -1,22 +1,27 @@
-fu tmux#indent() abort
-    " If the string is not closed and was previously indented, then keep the
-    " indentation.
-    return s:prev_line_ends_with_open_string(v:lnum)
-        \ ?     indent('.')
-        \ :     0
-endfu
+vim9 noclear
 
-fu s:highlight_group(line, col) abort
-    return synID(a:line, a:col, 1)->synIDattr('name')
-endfu
+if exists('loaded') | finish | endif
+var loaded = true
 
-fu s:prev_line_ends_with_open_string(lnum) abort
-    if a:lnum > 1
-        let prev_line_len = getline(a:lnum - 1)->strlen()
-        if s:highlight_group(a:lnum - 1, prev_line_len) is# 'tmuxString'
-            return 1
+def tmux#indent#expr(): number
+    # If the  string is not  closed and was  previously indented, then  keep the
+    # indentation.
+    return PrevLineEndsWithOpenString(v:lnum)
+        ?     indent('.')
+        :     0
+enddef
+
+def HighlightGroup(line: number, col: number): string
+    return synID(line, col, true)->synIDattr('name')
+enddef
+
+def PrevLineEndsWithOpenString(lnum: number): bool
+    if lnum > 1
+        var prev_line_len = getline(lnum - 1)->strlen()
+        if HighlightGroup(lnum - 1, prev_line_len) == 'tmuxString'
+            return true
         endif
     endif
-    return 0
-endfu
+    return false
+enddef
 

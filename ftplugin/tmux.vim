@@ -14,5 +14,5 @@ compiler tmux
 " Teardown {{{1
 
 let b:undo_ftplugin = get(b:, 'undo_ftplugin', 'exe')
-    \ .. '| call tmux#undo_ftplugin()'
+    \ .. '| call tmux#undoFtplugin()'
 
