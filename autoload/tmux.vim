@@ -4,7 +4,7 @@ if exists('loaded') | finish | endif
 var loaded = true
 
 import Opfunc from 'lg.vim'
-const SID = execute('fu s:Opfunc')->matchstr('\C\<def\s\+\zs<SNR>\d\+_')
+const SID = execute('fu Opfunc')->matchstr('\C\<def\s\+\zs<SNR>\d\+_')
 const PROMPT_SIGIL = "\u066a"
 
 def tmux#pasteLastShellCmd(n: number) #{{{1
