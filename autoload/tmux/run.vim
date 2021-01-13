@@ -503,14 +503,14 @@ def RunShellCmd(arg_cmd: string) #{{{2
         #}}}
         sil system(tmux_cmd)
     else
-        sil timer_start(2'000, () => system(tmux_cmd))
+        timer_start(2'000, () => system(tmux_cmd))
     endif
 enddef
 #}}}1
 # Utilities {{{1
 def IsInVimFencedCodeblock(): bool #{{{2
     return synstack('.', col('.'))
-        ->map((_, v) => synIDattr(v, 'name'))
+        ->mapnew((_, v) => synIDattr(v, 'name'))
         ->match('\cmarkdownHighlightvim') == 0
 enddef
 
@@ -532,7 +532,7 @@ def IsInCodeblock(): bool #{{{2
     # stack, which is the only relevant place.
     #}}}
     return synstack('.', col('.'))
-        ->map((_, v) => synIDattr(v, 'name'))
+        ->mapnew((_, v) => synIDattr(v, 'name'))
         ->reverse()
         ->match('\ccodeblock') == 0
 enddef
@@ -579,7 +579,7 @@ def PreviousPaneRunsShell(): bool #{{{2
     # tried, I got unexpected and inconsistent results.
     # Besides, it seems like a corner case; is it worth the trouble?
     #}}}
-    sil var cmd_in_previous_pane = system("tmux display -p -t! '#{pane_current_command}'")
+    sil sil var cmd_in_previous_pane = system("tmux display -p -t! '#{pane_current_command}'")
         ->trim("\n", 2)
     return cmd_in_previous_pane =~ '^\%(bash\|dash\|zsh\)$'
 enddef
