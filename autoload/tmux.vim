@@ -4,11 +4,11 @@ if exists('loaded') | finish | endif
 var loaded = true
 
 import Opfunc from 'lg.vim'
-const SID = execute('fu Opfunc')->matchstr('\C\<def\s\+\zs<SNR>\d\+_')
-const PROMPT_SIGIL = "\u066a"
+const SID: string = execute('fu Opfunc')->matchstr('\C\<def\s\+\zs<SNR>\d\+_')
+const PROMPT_SIGIL: string = "\u066a"
 
 def tmux#pasteLastShellCmd(n: number) #{{{1
-    sil var buffer = systemlist('tmux showb')
+    sil var buffer: list<string> = systemlist('tmux showb')
 
     # The last 2 lines are the prompt of the last yet-to-be-typed command.  Useless.
     buffer = buffer[: -3]
@@ -23,13 +23,13 @@ def tmux#pasteLastShellCmd(n: number) #{{{1
     #
     # If the test only involved the current item, there would be no need for `copy()`.
     #}}}
-    var copy_buffer = copy(buffer)
-    var len_buffer = len(buffer)
+    var copy_buffer: list<string> = copy(buffer)
+    var len_buffer: number = len(buffer)
     filter(buffer, (i, v) =>
            i == 0
         || i == len_buffer - 1
         || copy_buffer[i + 1][0] != PROMPT_SIGIL)
-    var idx = match(buffer, '^' .. PROMPT_SIGIL, 0, n + 1)
+    var idx: number = match(buffer, '^' .. PROMPT_SIGIL, 0, n + 1)
     if idx == -1
         idx = len_buffer
     endif
@@ -77,7 +77,7 @@ enddef
 # in man page with 'K'
 # '\[' at the end of the keyword ensures the match jumps to the correct
 # place in tmux manpage where the option/command is described.
-const KEYWORD_MAPPINGS = {
+const KEYWORD_MAPPINGS: dict<string> = {
     attach:       'attach-session',
     bind:         'bind-key \[',
     bind-key:     'bind-key \[',
@@ -166,7 +166,7 @@ const KEYWORD_MAPPINGS = {
 # makes it easy to find a section in the manpage where the keyword is described.
 # This  dictionary provides  a  mapping  between a  syntax  highlight group  and
 # related manpage section.
-const HIGHLIGHT_GROUP_MANPAGE_SECTION = {
+const HIGHLIGHT_GROUP_MANPAGE_SECTION: dict<string> = {
     tmuxClientSessionCmds: 'CLIENTS AND SESSIONS',
     tmuxWindowPaneCmds:    'WINDOWS AND PANES',
     tmuxBindingCmds:       'KEY BINDINGS',
@@ -197,10 +197,10 @@ def ManTmuxSearch(section: string, regex: string): bool
 enddef
 
 def KeywordBasedJump(highlight_group: string, keyword: string)
-    var section = has_key(HIGHLIGHT_GROUP_MANPAGE_SECTION, highlight_group)
+    var section: string = has_key(HIGHLIGHT_GROUP_MANPAGE_SECTION, highlight_group)
         ?     HIGHLIGHT_GROUP_MANPAGE_SECTION[highlight_group]
         :     ''
-    var search_keyword = GetSearchKeyword(keyword)
+    var search_keyword: string = GetSearchKeyword(keyword)
 
     Man tmux
 
@@ -218,7 +218,7 @@ enddef
 
 # highlight group based jump {{{2
 
-const HIGHLIGHT_GROUP_TO_MATCH_MAPPING = {
+const HIGHLIGHT_GROUP_TO_MATCH_MAPPING: dict<list<string>> = {
     tmuxKeyTable:            ['KEY BINDINGS', '^\s\+\zslist-keys', ''],
     tmuxLayoutOptionValue:   ['WINDOWS AND PANES', '^\s\+\zs{}', '^\s\+\zsThe following layouts are supported'],
     tmuxUserOptsSet:         ['.', '^OPTIONS', ''],
@@ -246,11 +246,11 @@ const HIGHLIGHT_GROUP_TO_MATCH_MAPPING = {
 
 def HighlightGroupBasedJump(highlight_group: string, keyword: string)
     Man tmux
-    var section = HIGHLIGHT_GROUP_TO_MATCH_MAPPING[highlight_group][0]
-    var search_string = HIGHLIGHT_GROUP_TO_MATCH_MAPPING[highlight_group][1]
-    var fallback_string = HIGHLIGHT_GROUP_TO_MATCH_MAPPING[highlight_group][2]
+    var section: string = HIGHLIGHT_GROUP_TO_MATCH_MAPPING[highlight_group][0]
+    var search_string: string = HIGHLIGHT_GROUP_TO_MATCH_MAPPING[highlight_group][1]
+    var fallback_string: string = HIGHLIGHT_GROUP_TO_MATCH_MAPPING[highlight_group][2]
 
-    var search_keyword = substitute(search_string, '{}', keyword, '')
+    var search_keyword: string = substitute(search_string, '{}', keyword, '')
     if ManTmuxSearch(section, search_keyword)
     || ManTmuxSearch(section, fallback_string)
         norm! zt
@@ -265,8 +265,8 @@ enddef
 # just open manpage {{{2
 
 def s:JustOpenManpage(highlight_group: string): bool
-    var char_under_cursor = getline('.')->strpart(col('.') - 1)[0]
-    var syn_groups =<< trim END
+    var char_under_cursor: string = getline('.')->strpart(col('.') - 1)[0]
+    var syn_groups: list<string> =<< trim END
 
         tmuxStringDelimiter
         tmuxOptions
@@ -296,9 +296,9 @@ enddef
 # The only way to achieve this is to invoke `tmux#man()` from `doc#mapping#main()`.
 #}}}
 def tmux#man()
-    var keyword = expand('<cWORD>')
+    var keyword: string = expand('<cWORD>')
 
-    var highlight_group = synID('.', col('.'), 1)->synIDtrans()->synIDattr('name')
+    var highlight_group: string = synID('.', col('.'), 1)->synIDtrans()->synIDattr('name')
     if JustOpenManpage(highlight_group)
         Man tmux
     elseif has_key(HIGHLIGHT_GROUP_TO_MATCH_MAPPING, highlight_group)
@@ -318,12 +318,12 @@ enddef
 
 def tmux#filteropCore(_: any)
     redraw
-    var lines = getreg('"', true, true)
+    var lines: list<string> = getreg('"', true, true)
 
-    var all_output = ''
-    var index = 0
+    var all_output: string = ''
+    var index: number = 0
     while index < len(lines)
-        var line = lines[index]
+        var line: string = lines[index]
 
         # if line is a part of multi-line string (those have '\' at the end)
         # and not last line, perform " concatenation
@@ -340,7 +340,7 @@ def tmux#filteropCore(_: any)
             continue
         endif
 
-        var command = 'tmux ' .. line
+        var command: string = 'tmux ' .. line
         if all_output =~ '\S'
             all_output ..= "\n" .. command
         # empty var, do not include newline first
@@ -348,7 +348,7 @@ def tmux#filteropCore(_: any)
             all_output = command
         endif
 
-        sil var output = system(command)
+        sil var output: string = system(command)
         if v:shell_error
             # reset `v:shell_error`
             system('')

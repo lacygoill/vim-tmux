@@ -17,7 +17,7 @@ enddef
 
 def PrevLineEndsWithOpenString(lnum: number): bool
     if lnum > 1
-        var prev_line_len = getline(lnum - 1)->strlen()
+        var prev_line_len: number = getline(lnum - 1)->strlen()
         if HighlightGroup(lnum - 1, prev_line_len) == 'tmuxString'
             return true
         endif

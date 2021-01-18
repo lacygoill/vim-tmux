@@ -6,7 +6,7 @@ var loaded = true
 # Init {{{1
 
 import Catch from 'lg.vim'
-const PROMPT = '[$%]\s'
+const PROMPT: string = '[$%]\s'
 
 # Interface {{{1
 def tmux#run#command(arg_cmd = ''): string #{{{2
@@ -20,10 +20,10 @@ def tmux#run#command(arg_cmd = ''): string #{{{2
         return 'g@l'
     endif
     # boolean meaning that we've pressed `||`, and we just want to repeat the last command
-    var repeat = arg_cmd == 'repeat'
+    var repeat: bool = arg_cmd == 'repeat'
     var cmd: string
     if !repeat
-        var cmd_is_actually_type = index(['char', 'line', 'block'], arg_cmd) >= 0
+        var cmd_is_actually_type: bool = index(['char', 'line', 'block'], arg_cmd) >= 0
         if cmd_is_actually_type
             cmd = GetCmd()
         else
@@ -98,12 +98,12 @@ def GetCmd(): string #{{{2
         endif
     endif
 
-    var cml = GetCml()
-    var cbi = GetCodeblockIndent(cml)
+    var cml: string = GetCml()
+    var cbi: string = GetCodeblockIndent(cml)
     cmd = GetCmdStart(cml, cbi)
 
     # the command could be split on multiple lines
-    var curpos = getcurpos()
+    var curpos: list<number> = getcurpos()
     if cmd != '' || search('^\s*' .. cml .. cbi .. PROMPT, 'bW') > 0
         cmd = GetMultilineCodeblock(cml, cbi, curpos[1])
         setpos('.', curpos)
@@ -151,19 +151,19 @@ def GetCmdStart(cml: string, cbi: string): string #{{{2
 enddef
 
 def GetMultilineCodeblock(cml: string, cbi: string, curlnum: number): string #{{{2
-    var cmd = GetCmdStart(cml, cbi)
+    var cmd: string = GetCmdStart(cml, cbi)
     # sanity check
     if cmd == ''
         return ''
     endif
-    var end = GetEndLnum(cmd, cml)
+    var end: number = GetEndLnum(cmd, cml)
 
     # make sure  the code block  which is found  is relevant (i.e.  the original
     # cursor position should be between the start and end of the block)
     if !(curlnum >= line('.') && curlnum <= end)
         cmd = ''
     else
-        var lines = [cmd] + getline(line('.') + 1, end)
+        var lines: list<string> = [cmd] + getline(line('.') + 1, end)
         # A trailing space is needed to preserve a possible alignment.{{{
         #
         # Suppose you press your mapping on this:
@@ -182,8 +182,9 @@ def GetMultilineCodeblock(cml: string, cbi: string, curlnum: number): string #{{
         #
         # We want the alignment of `a`, `b`, `c` and `d` to be preserved.
         #}}}
-        var trailing_space = getline('.') =~ '\\\s*$' ? ' ' : ''
-        var indent = getline('.')->matchstr('^\s*' .. cml .. '\s*') .. trailing_space
+        var trailing_space: string = getline('.') =~ '\\\s*$' ? ' ' : ''
+        var indent: string = getline('.')
+            ->matchstr('^\s*' .. cml .. '\s*') .. trailing_space
         cmd = map(lines, (_, v) => substitute(v, indent, '', ''))
             ->join("\n")
     endif
@@ -192,7 +193,7 @@ def GetMultilineCodeblock(cml: string, cbi: string, curlnum: number): string #{{
 enddef
 
 def GetEndLnum(cmd: string, cml: string): number #{{{2
-    var end = line('.')
+    var end: number = line('.')
 
     # support continuation lines
     if cmd =~ '\\\s*$'
@@ -237,7 +238,7 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
     #     enddef
     #}}}
 
-    var curpos = getcurpos()
+    var curpos: list<number> = getcurpos()
     # To find the starting line of the block, we first look for the nearest line
     # *outside* the block.  Then, we look for the nearest line *inside* the block.
     var outside: string
@@ -301,10 +302,10 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
     # To ignore  false positives, like  some output, or  list item, and  to make
     # sure we land on a code block.
     #}}}
-    var Skip = () => !IsInCodeblock()
-    var start = search(inside, 'W', 0, 500, Skip)
+    var Skip: func = (): bool => !IsInCodeblock()
+    var start: number = search(inside, 'W', 0, 500, Skip)
     search(outside .. '\|\%$', 'W')
-    var end = search(inside, 'bW', 0, 500, Skip)
+    var end: number = search(inside, 'bW', 0, 500, Skip)
     setpos('.', curpos)
     if !start || !end
         return ''
@@ -315,7 +316,7 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
         return ''
     endif
 
-    var startline = getline(start)
+    var startline: string = getline(start)
     # There should not be the start of a heredoc on the first line.{{{
     #
     # If we're  here, it  means that we  didn't find a  command starting  with a
@@ -332,35 +333,36 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
     if startline =~# '<<-\=\([''"]\=\)EOF\1'
         return ''
     endif
-    var whole_indent = matchstr(startline, '^\s*' .. cml .. cbi)
-    var lines = getline(start, end)
-    var cmd = map(lines, (_, v) => substitute(v, whole_indent .. '\|^\s*' .. cml .. '$', '', ''))
+    var whole_indent: string = matchstr(startline, '^\s*' .. cml .. cbi)
+    var lines: list<string> = getline(start, end)
+    var cmd: list<string> = map(lines, (_, v) =>
+        substitute(v, whole_indent .. '\|^\s*' .. cml .. '$', '', ''))
     cmd = Vimify(cmd)
     return join(cmd, "\n")
 enddef
 
 def GetVimFencedCodeblock(): string #{{{2
-    var start = search('^```vim', 'bcnW')
+    var start: number = search('^```vim', 'bcnW')
     if !start
         return ''
     endif
     start += 1
 
-    var curpos = getcurpos()
+    var curpos: list<number> = getcurpos()
     norm! 0
-    var end = search('```$', 'cnW')
+    var end: number = search('```$', 'cnW')
     setpos('.', curpos)
     if !end
         return ''
     endif
     end -= 1
 
-    var curlnum = line('.')
+    var curlnum: number = line('.')
     if !(curlnum >= start && curlnum <= end)
         return ''
     endif
 
-    var cmd = getline(start, end)
+    var cmd: list<string> = getline(start, end)
     cmd = Vimify(cmd)
     return join(cmd, "\n")
 enddef
@@ -379,8 +381,8 @@ def ClearStalePaneId() #{{{2
     if pane_id == ''
         return
     endif
-    sil var open_panes = systemlist("tmux lsp -F '#D'")
-    var is_pane_still_open = index(open_panes, pane_id) >= 0
+    sil var open_panes: list<string> = systemlist("tmux lsp -F '#D'")
+    var is_pane_still_open: bool = index(open_panes, pane_id) >= 0
     if !is_pane_still_open
         # the pane should be closed, but better be safe
         sil system('tmux killp -t ' .. pane_id)
@@ -389,7 +391,7 @@ def ClearStalePaneId() #{{{2
 enddef
 
 def OpenPaneAndSaveId() #{{{2
-    var cmds = [
+    var cmds: list<string> = [
         'splitw -c',
         shellescape('/run/user/1000/tmp'),
         '-d -p 25 -PF "#D"'
@@ -421,6 +423,7 @@ def ClosePane(when: string) #{{{2
             au! TmuxRunCmdClosePane
         catch
             Catch()
+            return
         endtry
     endif
 enddef
@@ -465,7 +468,7 @@ def RunShellCmd(arg_cmd: string) #{{{2
     endif
     sil system(clear)
 
-    var cmd = substitute(arg_cmd, '\\\s\+$', '\', '')
+    var cmd: string = substitute(arg_cmd, '\\\s\+$', '\', '')
     # https://github.com/jebaum/vim-tmuxify/issues/16
         ->substitute('\t', ' ', 'g')
     # Make sure a trailing semicolon is correctly sent.{{{
@@ -478,10 +481,10 @@ def RunShellCmd(arg_cmd: string) #{{{2
     if cmd[-1] == ';'
         cmd = cmd[: -2] .. '\;'
     endif
-    var tempfile = tempname()
+    var tempfile: string = tempname()
     split(cmd, '\n')->writefile(tempfile, 'b')
 
-    var tmux_cmd = 'tmux loadb -b barx ' .. tempfile
+    var tmux_cmd: string = 'tmux loadb -b barx ' .. tempfile
         .. ' \; pasteb -d -p -b barx -t ' .. pane_id
         .. ' \; send -t ' .. pane_id .. ' C-m'
 
@@ -538,7 +541,7 @@ def IsInCodeblock(): bool #{{{2
 enddef
 
 def PreviousPaneRunsShell(): bool #{{{2
-    sil var number_of_panes = system("tmux display -p '#{window_panes}'")
+    sil var number_of_panes: number = system("tmux display -p '#{window_panes}'")
         ->trim("\n", 2)
         ->str2nr()
     if number_of_panes < 2
@@ -579,7 +582,8 @@ def PreviousPaneRunsShell(): bool #{{{2
     # tried, I got unexpected and inconsistent results.
     # Besides, it seems like a corner case; is it worth the trouble?
     #}}}
-    sil sil var cmd_in_previous_pane = system("tmux display -p -t! '#{pane_current_command}'")
+    sil sil var cmd_in_previous_pane: string =
+        system("tmux display -p -t! '#{pane_current_command}'")
         ->trim("\n", 2)
     return cmd_in_previous_pane =~ '^\%(bash\|dash\|zsh\)$'
 enddef
@@ -601,7 +605,8 @@ enddef
 
 def PaneIsRunningVim(): bool
     # Warning: cannot detect `vipe(1)`, because in that case, `#{pane_current_command}` is `zsh`.
-    var cmd = 'tmux display -t ' .. pane_id .. ' -p "#{m:*vim,#{pane_current_command}}"'
+    var cmd: string =
+        'tmux display -t ' .. pane_id .. ' -p "#{m:*vim,#{pane_current_command}}"'
     return systemlist(cmd)[0]->str2nr() ? true : false
 enddef
 

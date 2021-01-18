@@ -3,7 +3,7 @@ vim9 noclear
 if exists('loaded') | finish | endif
 var loaded = true
 
-const SFILE = expand('<sfile>:p')
+const SFILE: string = expand('<sfile>:p')
 
 # Interface {{{1
 def tmux#capture_pane#main() #{{{2
@@ -38,7 +38,7 @@ def tmux#capture_pane#main() #{{{2
     search('^\S', 'bW')
     sil keepj keepp :.,$g/^\s*$/d _
 
-    var pat_cmd = '\m\C/MSG\s\+.\{-}XDCC\s\+SEND\s\+\d\+'
+    var pat_cmd: string = '\m\C/MSG\s\+.\{-}XDCC\s\+SEND\s\+\d\+'
     # Format the buffer if it contains commands to downloads files via xdcc.{{{
     #
     # Remove noise.
@@ -112,7 +112,7 @@ def tmux#capture_pane#main() #{{{2
         # If you wanted to  use `xclip(1)` from Vim, you would  need to start it
         # without a shell.  First, you could write the text in a file:
         #
-        #     var tempfile = tempname()
+        #     var tempfile: string = tempname()
         #     split(@", '\n')->writefile(tempfile, 'b')
         #
         # Then you could run:
@@ -179,7 +179,7 @@ def FormatXdccBuffer(pat_cmd: string) #{{{2
     #}}}
 
     # highlight filenames
-    var pat_file = '\d\+x\s*|\s*[0-9.KMG]*\s*|\s*\zs\S*'
+    var pat_file: string = '\d\+x\s*|\s*[0-9.KMG]*\s*|\s*\zs\S*'
     matchadd('Underlined', pat_file, 0)
 
     # conceal commands
@@ -199,8 +199,8 @@ def FormatXdccBuffer(pat_cmd: string) #{{{2
 enddef
 
 def FormatShellBuffer() #{{{2
-    noremap <buffer><expr><nowait> [c brackets#move#regex('shell_prompt', 0)
-    noremap <buffer><expr><nowait> ]c brackets#move#regex('shell_prompt', 1)
+    noremap <buffer><expr><nowait> [c brackets#move#regex('shell_prompt', v:false)
+    noremap <buffer><expr><nowait> ]c brackets#move#regex('shell_prompt', v:true)
     sil! repmap#make#repeatable({
         mode: '',
         buffer: true,
@@ -240,8 +240,8 @@ def FormatShellBuffer() #{{{2
 enddef
 
 def CopyCmdToGetFileViaXdcc() #{{{2
-    var line = getline('.')
-    var msg = matchstr(line, '\m\C/MSG\s\+\zs.\{-}XDCC\s\+SEND\s\+\d\+')
+    var line: string = getline('.')
+    var msg: string = matchstr(line, '\m\C/MSG\s\+\zs.\{-}XDCC\s\+SEND\s\+\d\+')
     # What is this `moviegods_send_me_file`?{{{
     #
     # A WeeChat alias.
@@ -267,7 +267,7 @@ def CopyCmdToGetFileViaXdcc() #{{{2
     #
     #     cmd1 ; cmd2
     #}}}
-    var cmd = '/moviegods_send_me_file ' .. msg
+    var cmd: string = '/moviegods_send_me_file ' .. msg
     setreg('+', [cmd], 'c')
     q!
 enddef
