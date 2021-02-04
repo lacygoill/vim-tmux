@@ -46,7 +46,7 @@ def tmux#capture_pane#main() #{{{2
     # Highlight filenames.
     # Install mappings to copy the xdcc command in the clipboard.
     #}}}
-    # Why `!search('│')`?{{{
+    # Why `search('│') == 0`?{{{
     #
     # The code will work  best after we have pressed our  WeeChat key binding to
     # get a bare display (`M-r` atm), where “noise” has been removed.

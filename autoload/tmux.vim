@@ -48,9 +48,10 @@ def tmux#pasteLastShellCmd(n: number) #{{{1
         redraw!
         return
     endif
-    buffer->map((_, v) => substitute(v, '^[^٪].*\zs', '~', ''))
-          ->map((_, v) => substitute(v, '^٪', '$', ''))
-          ->map((_, v) => '    ' .. v)
+    buffer
+        ->map((_, v) => substitute(v, '^[^٪].*\zs', '~', ''))
+        ->map((_, v) => substitute(v, '^٪', '$', ''))
+        ->map((_, v) => '    ' .. v)
     if getline('.') =~ '\S'
         buffer = [''] + buffer
     endif
@@ -264,7 +265,7 @@ enddef
 
 # just open manpage {{{2
 
-def s:JustOpenManpage(highlight_group: string): bool
+def JustOpenManpage(highlight_group: string): bool
     var char_under_cursor: string = getline('.')->strpart(col('.') - 1)[0]
     var syn_groups: list<string> =<< trim END
 

@@ -330,7 +330,7 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
     # omit the  prompt for  all Vim commands  using a heredoc,  but not  for the
     # other commands (e.g. `cat(1)`).
     #}}}
-    if startline =~# '<<-\=\([''"]\=\)EOF\1'
+    if startline =~ '<<-\=\([''"]\=\)EOF\1'
         return ''
     endif
     var whole_indent: string = matchstr(startline, '^\s*' .. cml .. cbi)
@@ -520,7 +520,7 @@ enddef
 def IsInCodeblock(): bool #{{{2
     # Note that you can't just check that the pattern `codeblock` matches one of the syntax items:{{{
     #
-    #     \ ->match('\ccodeblock') != -1
+    #     \ ->match('\ccodeblock') >= 0
     #
     # It must match the last one:
     #
