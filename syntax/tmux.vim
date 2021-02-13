@@ -208,6 +208,9 @@ syn keyword tmuxModeCmds
     \ copy-pipe
     \ copy-pipe-and-cancel
     \ copy-pipe-no-clear
+    \ pipe
+    \ pipe-and-cancel
+    \ pipe-no-clear
     \ copy-selection
     \ copy-selection-and-cancel
     \ copy-selection-no-clear
