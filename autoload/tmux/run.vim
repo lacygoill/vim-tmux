@@ -1,4 +1,4 @@
-vim9 noclear
+vim9script noclear
 
 if exists('loaded') | finish | endif
 var loaded = true
@@ -220,7 +220,7 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
     #     " too verbose
     #     ✘
     #     $ vim -Nu NONE -S <(cat <<'EOF'
-    #         vim9
+    #         vim9script
     #         def g:Func()
     #             echo 'before error'
     #             invalid
@@ -230,7 +230,7 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
     #     )
     #
     #     ✔
-    #     vim9
+    #     vim9script
     #     def g:Func()
     #         echo 'before error'
     #         invalid
@@ -256,7 +256,7 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
         # be able  to run the second  block without the first  one being wrongly
         # merged with the output lines.  Example:
         #
-        #     vim9
+        #     vim9script
         #     def FuncA()
         #         def FuncB()
         #         enddef
@@ -265,7 +265,7 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
         #
         #     E117: Unknown function: FuncB~
         #
-        #     vim9
+        #     vim9script
         #     def FuncA()
         #         def FuncB()
         #         enddef
