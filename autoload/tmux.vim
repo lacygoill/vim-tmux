@@ -25,7 +25,7 @@ def tmux#pasteLastShellCmd(n: number) #{{{1
     #}}}
     var copy_buffer: list<string> = copy(buffer)
     var len_buffer: number = len(buffer)
-    filter(buffer, (i, v) =>
+    filter(buffer, (i: number, v: string): bool =>
            i == 0
         || i == len_buffer - 1
         || copy_buffer[i + 1][0] != PROMPT_SIGIL)
@@ -49,9 +49,9 @@ def tmux#pasteLastShellCmd(n: number) #{{{1
         return
     endif
     buffer
-        ->map((_, v) => substitute(v, '^[^٪].*\zs', '~', ''))
-        ->map((_, v) => substitute(v, '^٪', '$', ''))
-        ->map((_, v) => '    ' .. v)
+        ->map((_, v: string): string => '    ' .. v
+            ->substitute('^[^٪].*\zs', '~', '')
+            ->substitute(v, '^٪', '$', ''))
     if getline('.') =~ '\S'
         buffer = [''] + buffer
     endif

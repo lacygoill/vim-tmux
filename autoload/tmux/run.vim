@@ -185,7 +185,8 @@ def GetMultilineCodeblock(cml: string, cbi: string, curlnum: number): string #{{
         var trailing_space: string = getline('.') =~ '\\\s*$' ? ' ' : ''
         var indent: string = getline('.')
             ->matchstr('^\s*' .. cml .. '\s*') .. trailing_space
-        cmd = map(lines, (_, v) => substitute(v, indent, '', ''))
+        cmd = lines
+            ->map((_, v: string): string => substitute(v, indent, '', ''))
             ->join("\n")
     endif
 
@@ -335,8 +336,9 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
     endif
     var whole_indent: string = matchstr(startline, '^\s*' .. cml .. cbi)
     var lines: list<string> = getline(start, end)
-    var cmd: list<string> = map(lines, (_, v) =>
-        substitute(v, whole_indent .. '\|^\s*' .. cml .. '$', '', ''))
+    var cmd: list<string> = lines
+        ->map((_, v: string): string =>
+            substitute(v, whole_indent .. '\|^\s*' .. cml .. '$', '', ''))
     cmd = Vimify(cmd)
     return join(cmd, "\n")
 enddef
@@ -513,7 +515,7 @@ enddef
 # Utilities {{{1
 def IsInVimFencedCodeblock(): bool #{{{2
     return synstack('.', col('.'))
-        ->mapnew((_, v) => synIDattr(v, 'name'))
+        ->mapnew((_, v: number): string => synIDattr(v, 'name'))
         ->match('\cmarkdownHighlightvim') == 0
 enddef
 
@@ -535,7 +537,7 @@ def IsInCodeblock(): bool #{{{2
     # stack, which is the only relevant place.
     #}}}
     return synstack('.', col('.'))
-        ->mapnew((_, v) => synIDattr(v, 'name'))
+        ->mapnew((_, v: number): string => synIDattr(v, 'name'))
         ->reverse()
         ->match('\ccodeblock') == 0
 enddef
