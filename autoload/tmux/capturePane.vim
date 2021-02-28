@@ -6,7 +6,7 @@ var loaded = true
 const SFILE: string = expand('<sfile>:p')
 
 # Interface {{{1
-def tmux#capture_pane#main() #{{{2
+def tmux#capturePane#main() #{{{2
     # Purpose:{{{
     #
     # This function is called by a tmux key binding.
