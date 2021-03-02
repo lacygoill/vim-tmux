@@ -25,10 +25,11 @@ def tmux#pasteLastShellCmd(n: number) #{{{1
     #}}}
     var copy_buffer: list<string> = copy(buffer)
     var len_buffer: number = len(buffer)
-    filter(buffer, (i: number, v: string): bool =>
-           i == 0
-        || i == len_buffer - 1
-        || copy_buffer[i + 1][0] != PROMPT_SIGIL)
+    buffer
+        ->filter((i: number, v: string): bool =>
+                   i == 0
+                || i == len_buffer - 1
+                || copy_buffer[i + 1][0] != PROMPT_SIGIL)
     var idx: number = match(buffer, '^' .. PROMPT_SIGIL, 0, n + 1)
     if idx == -1
         idx = len_buffer
@@ -49,9 +50,10 @@ def tmux#pasteLastShellCmd(n: number) #{{{1
         return
     endif
     buffer
-        ->map((_, v: string): string => '    ' .. v
-            ->substitute('^[^٪].*\zs', '~', '')
-            ->substitute(v, '^٪', '$', ''))
+        ->map((_, v: string): string =>
+                '    ' .. v
+                ->substitute('^[^٪].*\zs', '~', '')
+                ->substitute(v, '^٪', '$', ''))
     if getline('.') =~ '\S'
         buffer = [''] + buffer
     endif
@@ -251,7 +253,7 @@ def HighlightGroupBasedJump(highlight_group: string, keyword: string)
     var search_string: string = HIGHLIGHT_GROUP_TO_MATCH_MAPPING[highlight_group][1]
     var fallback_string: string = HIGHLIGHT_GROUP_TO_MATCH_MAPPING[highlight_group][2]
 
-    var search_keyword: string = substitute(search_string, '{}', keyword, '')
+    var search_keyword: string = search_string->substitute('{}', keyword, '')
     if ManTmuxSearch(section, search_keyword)
     || ManTmuxSearch(section, fallback_string)
         norm! zt
@@ -317,7 +319,7 @@ def tmux#filterop(): string
     return 'g@'
 enddef
 
-def tmux#filteropCore(_: any)
+def tmux#filteropCore(_a: any)
     redraw
     var lines: list<string> = getreg('"', true, true)
 
@@ -331,7 +333,7 @@ def tmux#filteropCore(_: any)
         while line =~ '\\\s*$' && index != len(lines) - 1
             index += 1
             # remove '\' from line end
-            line = substitute(line, '\\\s*$', '', '')
+            line = line->substitute('\\\s*$', '', '')
             # append next line
             line ..= lines[index]
         endwhile

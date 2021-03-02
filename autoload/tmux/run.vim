@@ -186,7 +186,7 @@ def GetMultilineCodeblock(cml: string, cbi: string, curlnum: number): string #{{
         var indent: string = getline('.')
             ->matchstr('^\s*' .. cml .. '\s*') .. trailing_space
         cmd = lines
-            ->map((_, v: string): string => substitute(v, indent, '', ''))
+            ->map((_, v: string): string => v->substitute(indent, '', ''))
             ->join("\n")
     endif
 
@@ -338,7 +338,7 @@ def GetVimCmd(cml: string, cbi: string): string #{{{2
     var lines: list<string> = getline(start, end)
     var cmd: list<string> = lines
         ->map((_, v: string): string =>
-            substitute(v, whole_indent .. '\|^\s*' .. cml .. '$', '', ''))
+                v->substitute(whole_indent .. '\|^\s*' .. cml .. '$', '', ''))
     cmd = Vimify(cmd)
     return join(cmd, "\n")
 enddef
@@ -470,8 +470,9 @@ def RunShellCmd(arg_cmd: string) #{{{2
     endif
     sil system(clear)
 
-    var cmd: string = substitute(arg_cmd, '\\\s\+$', '\', '')
-    # https://github.com/jebaum/vim-tmuxify/issues/16
+    var cmd: string = arg_cmd
+        ->substitute('\\\s\+$', '\', '')
+        # https://github.com/jebaum/vim-tmuxify/issues/16
         ->substitute('\t', ' ', 'g')
     # Make sure a trailing semicolon is correctly sent.{{{
     #

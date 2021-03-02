@@ -38,7 +38,7 @@ def tmux#capturePane#main() #{{{2
     search('^\S', 'bW')
     sil keepj keepp :.,$g/^\s*$/d _
 
-    var pat_cmd: string = '\m\C/MSG\s\+.\{-}XDCC\s\+SEND\s\+\d\+'
+    var pat_cmd: string = '\C/MSG\s\+.\{-}XDCC\s\+SEND\s\+\d\+'
     # Format the buffer if it contains commands to downloads files via xdcc.{{{
     #
     # Remove noise.
@@ -241,7 +241,7 @@ enddef
 
 def CopyCmdToGetFileViaXdcc() #{{{2
     var line: string = getline('.')
-    var msg: string = matchstr(line, '\m\C/MSG\s\+\zs.\{-}XDCC\s\+SEND\s\+\d\+')
+    var msg: string = matchstr(line, '\C/MSG\s\+\zs.\{-}XDCC\s\+SEND\s\+\d\+')
     # What is this `moviegods_send_me_file`?{{{
     #
     # A WeeChat alias.
