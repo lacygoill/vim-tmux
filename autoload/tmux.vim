@@ -357,7 +357,7 @@ def tmux#filteropCore(_a: any)
             system('')
             throw output
         elseif output =~ '\S'
-            all_output ..= "\n> " .. output[0 : -2]
+            all_output ..= "\n> " .. output[: -2]
         endif
 
         index += 1

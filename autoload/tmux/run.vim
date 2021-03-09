@@ -186,8 +186,34 @@ def GetMultilineCodeblock(cml: string, cbi: string, curlnum: number): string #{{
         var indent: string = getline('.')
             ->matchstr('^\s*' .. cml .. '\s*') .. trailing_space
         cmd = lines
-            ->map((_, v: string): string => v->substitute(indent, '', ''))
-            ->join("\n")
+            ->map((_, v: string): string => v
+                    ->substitute(indent, '', '')
+                    # Remove comment leader on empty lines.{{{
+                    #
+                    # Otherwise, if you execute this command:
+                    #
+                    #     $ vim -S <(cat <<'EOF'
+                    #         vim9script
+                    #
+                    #         var lines =<< trim END
+                    #             aaa
+                    #
+                    #         END
+                    #         setline(1, lines)
+                    #     EOF
+                    #     )
+                    #
+                    # You'll end up with this buffer:
+                    #
+                    #     aaa
+                    #     #
+                    #
+                    # Which is not what you want; you only want this:
+                    #
+                    #     aaa
+                    #}}}
+                    ->substitute('^\s*#\s*', '', '')
+            )->join("\n")
     endif
 
     return cmd
